@@ -11,19 +11,25 @@
       font-family: Arial, sans-serif;
       background: #fff;
       color: #111;
-      min-width: 1024px;
     }
 
     /* ── BANNER ── */
     .banner {
       background: #081c25;
       width: 100%;
-      padding: 18px 32px;
+      padding: clamp(16px, 2.5vw, 40px) 32px;
       display: flex;
       align-items: center;
-      flex-wrap: nowrap;
-      gap: 0;
+      justify-content: center;
       min-height: 240px;
+    }
+
+    .banner-inner {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 1200px;
+      gap: 48px;
     }
 
     /* Left block: brand name + DWF + logo stacked, hook below */
@@ -32,8 +38,6 @@
       flex-direction: column;
       justify-content: space-between;
       flex-shrink: 0;
-      min-width: 260px;
-      height: 100%;
     }
 
     .brand-top {
@@ -49,16 +53,14 @@
     }
 
     .brand-name-img {
-      height: 36px;
-      max-height: 36px;
+      height: clamp(28px, 3vw, 44px);
       width: auto;
       object-fit: contain;
       display: block;
     }
 
     .dwf-img {
-      height: 44px;
-      max-height: 44px;
+      height: clamp(32px, 3.5vw, 52px);
       width: auto;
       object-fit: contain;
       display: block;
@@ -74,16 +76,14 @@
     }
 
     .logo-box img {
-      height: 100px;
-      max-height: 100px;
+      height: clamp(80px, 9vw, 140px);
       width: auto;
       object-fit: contain;
       display: block;
     }
 
     .brand-hook-img {
-      height: 50px;
-      max-height: 50px;
+      height: clamp(40px, 4.5vw, 64px);
       width: auto;
       object-fit: contain;
       margin-top: 10px;
@@ -95,14 +95,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      flex: 1;
       gap: 32px;
-      padding: 0 24px;
     }
 
     .banner-media img {
-      height: 160px;
-      max-height: 160px;
+      height: clamp(120px, 14vw, 200px);
       width: auto;
       object-fit: contain;
       flex-shrink: 0;
@@ -191,6 +188,7 @@
 
   <!-- BANNER -->
   <div class="banner">
+    <div class="banner-inner">
     <div class="banner-left">
       <div class="brand-top">
         <div class="brand-text-col">
@@ -208,6 +206,7 @@
       <img src="assets/nitrox-shaka.png" alt="Shaka" />
       <img class="dive-photo" src="assets/brand-photo.png" alt="Dive Photo" />
     </div>
+    </div><!-- /.banner-inner -->
   </div>
 
   <!-- NAV BUTTONS -->
