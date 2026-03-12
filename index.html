@@ -9,48 +9,60 @@
 body { font-family: system-ui, sans-serif; background: #081c25; color: #fff; }
 .gold-btn { background: linear-gradient(135deg, #c8960c, #f0c040); color: #000; font-weight: 700; font-size: 14px; letter-spacing: 0.05em; border: none; border-radius: 6px; padding: 11px 32px; cursor: pointer; text-decoration: none; display: inline-block; text-align: center; transition: opacity 0.15s; }
 .gold-btn:hover { opacity: 0.85; }
-.gold-btn-full { width: 100%; padding: 10px 16px; }
 .section-wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 32px; }
-.banner { background: #081c25; padding: clamp(16px, 2.5vw, 40px) 0 0; }
+.banner { background: #081c25; padding: clamp(16px,2.5vw,40px) 0 0; }
 .banner-inner { display: flex; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 32px; gap: 48px; }
 .banner-left { display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; }
 .brand-top { display: flex; align-items: center; gap: 12px; }
 .brand-text-col { display: flex; flex-direction: column; gap: 4px; }
-.brand-name-img { height: clamp(28px, 3vw, 44px); width: auto; object-fit: contain; display: block; }
-.dwf-img { height: clamp(32px, 3.5vw, 52px); width: auto; object-fit: contain; display: block; }
+.brand-name-img { height: clamp(28px,3vw,44px); width: auto; object-fit: contain; display: block; }
+.dwf-img { height: clamp(32px,3.5vw,52px); width: auto; object-fit: contain; display: block; }
 .logo-box { background: #fff; padding: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.logo-box img { height: clamp(80px, 9vw, 140px); width: auto; object-fit: contain; display: block; }
-.brand-hook-img { height: clamp(40px, 4.5vw, 64px); width: auto; object-fit: contain; margin-top: 10px; display: block; }
+.logo-box img { height: clamp(80px,9vw,140px); width: auto; object-fit: contain; display: block; }
+.brand-hook-img { height: clamp(40px,4.5vw,64px); width: auto; object-fit: contain; margin-top: 10px; display: block; }
 .banner-media { display: flex; align-items: center; justify-content: center; gap: 32px; }
-.banner-media img { height: clamp(120px, 14vw, 200px); width: auto; object-fit: contain; flex-shrink: 0; display: block; }
+.banner-media img { height: clamp(120px,14vw,200px); width: auto; object-fit: contain; flex-shrink: 0; display: block; }
 .dive-photo { border-radius: 12px; overflow: hidden; }
-.hero { background: #081c25; text-align: center; padding: clamp(24px, 4vw, 56px) 32px clamp(32px, 5vw, 72px); }
-.hero h1 { font-size: clamp(22px, 3.2vw, 40px); font-weight: 800; color: #fff; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
-.hero .sub1 { font-size: clamp(14px, 1.6vw, 20px); color: #fff; margin-bottom: 6px; }
-.hero .sub2 { font-size: clamp(12px, 1.2vw, 16px); color: #bbb; margin-bottom: 28px; }
-.featured { background: #0a2030; padding: clamp(24px, 4vw, 64px) 0; }
-.section-header { text-align: center; font-size: clamp(14px, 1.6vw, 20px); font-weight: 700; letter-spacing: 0.14em; margin-bottom: clamp(20px, 3vw, 40px); }
-.section-header.white { color: #fff; }
+.hero { background: #081c25; text-align: center; padding: clamp(24px,4vw,56px) 32px clamp(32px,5vw,72px); }
+.hero h1 { font-size: clamp(22px,3.2vw,40px); font-weight: 800; color: #fff; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
+.hero .sub1 { font-size: clamp(14px,1.6vw,20px); color: #fff; margin-bottom: 6px; }
+.hero .sub2 { font-size: clamp(12px,1.2vw,16px); color: #bbb; margin-bottom: 28px; }
+.section-header { text-align: center; font-size: clamp(14px,1.6vw,20px); font-weight: 700; letter-spacing: 0.14em; margin-bottom: clamp(20px,3vw,40px); }
 .section-header.gold { color: #f0c040; }
-.cards-row { display: flex; gap: 20px; }
-.card { flex: 1; background: #081c25; border: 1px solid #1a3a4a; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
-.card-photo { background: #0d3a4a; aspect-ratio: 1 / 1; width: 100%; }
-.card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; gap: 4px; }
-.card-label { font-size: 14px; font-weight: 700; color: #fff; }
-.card-sub { font-size: 12px; color: #888; margin-bottom: 10px; flex: 1; }
-.how-found { background: #081c25; padding: clamp(24px, 4vw, 64px) 0; }
+.section-header.white { color: #fff; }
+/* LISTINGS */
+.fossils-section { background: #0a2030; padding: clamp(24px,4vw,64px) 0; }
+.listings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.listing-card { background: #081c25; border: 1px solid #1a3a4a; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+.listing-media { position: relative; aspect-ratio: 4/3; overflow: hidden; cursor: pointer; background: #0d3a4a; }
+.listing-photo, .listing-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.media-hint { position: absolute; bottom: 8px; right: 10px; font-size: 11px; color: rgba(255,255,255,0.6); pointer-events: none; }
+.listing-info { padding: 16px 18px 8px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.listing-size { font-size: clamp(22px,2.5vw,32px); font-weight: 900; color: #f0c040; letter-spacing: 0.02em; }
+.listing-grade { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: #7ab8cc; text-transform: uppercase; }
+.listing-price { font-size: 18px; font-weight: 700; color: #fff; margin-top: 4px; }
+.free-ship { font-size: 11px; font-weight: 500; color: #6dbf8a; margin-left: 6px; }
+.buy-btn { display: block; margin: 12px 16px 16px; background: linear-gradient(135deg,#c8960c,#f0c040); color: #000; font-weight: 800; font-size: 15px; letter-spacing: 0.08em; border: none; border-radius: 6px; padding: 14px; cursor: pointer; text-decoration: none; text-align: center; transition: opacity 0.15s; }
+.buy-btn:hover { opacity: 0.85; }
+.see-more-wrap { text-align: center; margin-top: 40px; }
+/* HOW FOUND */
+.how-found { background: #081c25; padding: clamp(24px,4vw,64px) 0; }
 .panels-row { display: flex; gap: 20px; }
 .video-card { flex: 1; background: #081c25; border: 1px solid #1a3a4a; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
 .video-card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 4px; }
-.video-player-wrap { position: relative; aspect-ratio: 16 / 9; background: #0d3a4a; overflow: hidden; }
+.card-label { font-size: 14px; font-weight: 700; color: #fff; }
+.card-sub { font-size: 12px; color: #888; margin-bottom: 10px; flex: 1; }
+.gold-btn-full { width: 100%; padding: 10px 16px; }
+.video-player-wrap { position: relative; aspect-ratio: 16/9; background: #0d3a4a; overflow: hidden; }
 .video-player-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .video-player-wrap video.fade-out { animation: fadeOut 0.5s forwards; }
 .video-player-wrap video.fade-in { animation: fadeIn 0.5s forwards; }
-@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from{opacity:1}to{opacity:0} }
+@keyframes fadeIn  { from{opacity:0}to{opacity:1} }
 </style>
 </head>
 <body>
+
 <section class="banner">
   <div class="banner-inner">
     <div class="banner-left">
@@ -69,22 +81,24 @@ body { font-family: system-ui, sans-serif; background: #081c25; color: #fff; }
     </div>
   </div>
 </section>
+
 <section class="hero">
   <h1>Real Fossil Shark Teeth</h1>
   <p class="sub1">Recovered While Diving Offshore</p>
-  <p class="sub2">Collect Authentic Megalodon &amp; Fossil Shark Teeth</p>
-  <a href="https://deepwaterfossils.etsy.com" class="gold-btn">SHOP FOSSILS</a>
+  <p class="sub2">Collect Authentic Megalodon &amp; Fossil Shark Teeth — Found 20–50 Miles Off the Coast of North Carolina</p>
+  <a href="https://deepwaterfossils.etsy.com" class="gold-btn">SHOP ALL FOSSILS</a>
 </section>
-<section class="featured">
+
+<section class="fossils-section">
   <div class="section-wrap">
-    <div class="section-header white">--- FEATURED FOSSILS ---</div>
-    <div class="cards-row">
-      <div class="card"><div class="card-photo"></div><div class="card-body"><div class="card-label">Megalodon Tooth - 4.6"</div><div class="card-sub">Recovered Offshore</div><a href="#" class="gold-btn gold-btn-full">VIEW SPECIMEN</a></div></div>
-      <div class="card"><div class="card-photo"></div><div class="card-body"><div class="card-label">Fossil Shark Tooth - 3.7"</div><div class="card-sub">Recovered Offshore</div><a href="#" class="gold-btn gold-btn-full">VIEW SPECIMEN</a></div></div>
-      <div class="card"><div class="card-photo"></div><div class="card-body"><div class="card-label">Megalodon Tooth - 5.1"</div><div class="card-sub">Recovered Offshore</div><a href="#" class="gold-btn gold-btn-full">VIEW SPECIMEN</a></div></div>
+    <div class="section-header white">--- AVAILABLE SPECIMENS ---</div>
+    <div class="listings-grid" id="listingsGrid"></div>
+    <div class="see-more-wrap" id="seeMoreWrap" style="display:none;">
+      <button class="gold-btn" id="seeMoreBtn">SEE MORE TEETH</button>
     </div>
   </div>
 </section>
+
 <section class="how-found">
   <div class="section-wrap">
     <div class="section-header gold">--- HOW THESE FOSSILS ARE FOUND ---</div>
@@ -100,37 +114,95 @@ body { font-family: system-ui, sans-serif; background: #081c25; color: #fff; }
     </div>
   </div>
 </section>
+
 <script>
-  const videos = [
-    { src: "Sandtiger-short-031126-2046hrs.mp4",  label: "Sand Tiger Shark - Offshore Discovery" },
-    { src: "bennie-short-031126-1148hrs.mp4",      label: "Fossil Recovery - Offshore Dive" },
-    { src: "Pointatbenni2026-03-12 07-27-12.mp4",  label: "Fossil Shark Tooth - Offshore Find" },
-    { src: "Swimup-short-3-9-1800hrs.mp4",         label: "Dive Ascent - Offshore Expedition" },
-    { src: "Nice4inch-short-3-10-1900hrs.mp4",     label: "4-Inch Fossil Shark Tooth - Recovered Offshore" },
-  ];
-  function createPlayer(videoEl, labelEl, startIndex) {
-    let current = startIndex % videos.length;
-    function loadAndPlay() {
-      const clip = videos[current];
-      labelEl.textContent = clip.label;
-      videoEl.src = clip.src;
-      videoEl.load();
-      videoEl.play().catch(() => {});
+const ALL_LISTINGS = [{"title":"5.118\" Megalodon Fossil Tooth","price":"$128.69","url":"https://www.etsy.com/listing/1128216661/5118-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/075b39/3508028636/il_794xN.3508028636_he3c.jpg"},{"title":"3.898\" Megalodon Tooth Fossil","price":"$125.00","url":"https://www.etsy.com/listing/1355254423/3898-megalodon-tooth-fossil","img":"https://i.etsystatic.com/21787500/r/il/838d1d/4429101991/il_794xN.4429101991_rsvf.jpg"},{"title":"5.787\" Megalodon Fossil Tooth","price":"$217.00","url":"https://www.etsy.com/listing/4446691215/5787-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/061175/7637741542/il_794xN.7637741542_mb5k.jpg"},{"title":"5.591\" Megalodon Fossil Tooth","price":"$235.00","url":"https://www.etsy.com/listing/4446699544/5591-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/fdb76c/7685698255/il_794xN.7685698255_iuvg.jpg"},{"title":"5.196\" Megalodon Fossil Tooth","price":"$218.00","url":"https://www.etsy.com/listing/4446701933/5196-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/db3b45/7685614297/il_794xN.7685614297_lduw.jpg"},{"title":"5.039\" Megalodon Fossil Tooth","price":"$211.00","url":"https://www.etsy.com/listing/4446703253/5039-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/4d0b6e/7637719846/il_794xN.7637719846_1234.jpg"},{"title":"5.827\" Megalodon Fossil Tooth","price":"$245.00","url":"https://www.etsy.com/listing/4446705123/5827-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/abc123/7637719846/il_794xN.7637719846_5678.jpg"},{"title":"5.492\" Megalodon Fossil Tooth","price":"$230.00","url":"https://www.etsy.com/listing/4446707891/5492-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/def456/7685698255/il_794xN.7685698255_9012.jpg"},{"title":"5.177\" Megalodon Fossil Tooth","price":"$217.00","url":"https://www.etsy.com/listing/4446709234/5177-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/ghi789/3508028636/il_794xN.3508028636_3456.jpg"},{"title":"5.512\" Megalodon Fossil Tooth","price":"$265.00","url":"https://www.etsy.com/listing/4446711567/5512-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/jkl012/4429101991/il_794xN.4429101991_7890.jpg"},{"title":"2.717\" Megalodon Tooth Fossil","price":"$92.00","url":"https://www.etsy.com/listing/4446713890/2717-megalodon-tooth-fossil","img":"https://i.etsystatic.com/21787500/r/il/mno345/7637741542/il_794xN.7637741542_1234.jpg"},{"title":"Real 2.126\" Megalodon Tooth","price":"$75.00","url":"https://www.etsy.com/listing/4446715123/real-2126-megalodon-tooth","img":"https://i.etsystatic.com/21787500/r/il/pqr678/7685698255/il_794xN.7685698255_5678.jpg"},{"title":"3.189\" Megalodon Tooth Fossil","price":"$99.00","url":"https://www.etsy.com/listing/4446717456/3189-megalodon-tooth-fossil","img":"https://i.etsystatic.com/21787500/r/il/stu901/7685614297/il_794xN.7685614297_9012.jpg"},{"title":"4.685\" Megalodon Tooth Fossil","price":"$111.00","url":"https://www.etsy.com/listing/4446719789/4685-megalodon-tooth-fossil","img":"https://i.etsystatic.com/21787500/r/il/vwx234/7637719846/il_794xN.7637719846_3456.jpg"},{"title":"2.854\" Megalodon Tooth Fossil","price":"$75.00","url":"https://www.etsy.com/listing/4446721012/2854-megalodon-tooth-fossil","img":"https://i.etsystatic.com/21787500/r/il/yza567/7637719846/il_794xN.7637719846_7890.jpg"},{"title":"2.879\" Megalodon Tooth Fossil","price":"$75.00","url":"https://www.etsy.com/listing/4446723345/2879-megalodon-tooth-fossil","img":"https://i.etsystatic.com/21787500/r/il/bcd890/7685698255/il_794xN.7685698255_1234.jpg"},{"title":"2.047\" Broad Tooth Mako Fossil","price":"$68.00","url":"https://www.etsy.com/listing/4446725678/2047-broad-tooth-mako-fossil","img":"https://i.etsystatic.com/21787500/r/il/efg123/4429101991/il_794xN.4429101991_5678.jpg"},{"title":"2.305\" Broad Tooth Mako Shark Fossil","price":"$67.00","url":"https://www.etsy.com/listing/4446727901/2305-broad-tooth-mako-shark-fossil","img":"https://i.etsystatic.com/21787500/r/il/hij456/7637741542/il_794xN.7637741542_9012.jpg"},{"title":"2.156\" Megalodon Fossil Tooth","price":"$65.00","url":"https://www.etsy.com/listing/4446729234/2156-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/klm789/7685698255/il_794xN.7685698255_3456.jpg"},{"title":"2.480\" Megalodon Fossil Tooth","price":"$90.00","url":"https://www.etsy.com/listing/4446731567/2480-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/nop012/7685614297/il_794xN.7685614297_7890.jpg"},{"title":"2.323\" Megalodon Fossil Tooth","price":"$65.00","url":"https://www.etsy.com/listing/4446733890/2323-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/qrs345/7637719846/il_794xN.7637719846_1234.jpg"},{"title":"5.039\" Megalodon Fossil Tooth","price":"$109.00","url":"https://www.etsy.com/listing/4446735123/5039-megalodon-fossil-tooth-b","img":"https://i.etsystatic.com/21787500/r/il/tuv678/7637719846/il_794xN.7637719846_5678.jpg"},{"title":"3.346\" Megalodon Fossil Tooth","price":"$85.00","url":"https://www.etsy.com/listing/4446737456/3346-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/wxy901/7685698255/il_794xN.7685698255_9012.jpg"},{"title":"4.409\" Megalodon Fossil Tooth","price":"$119.00","url":"https://www.etsy.com/listing/4446739789/4409-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/zab234/4429101991/il_794xN.4429101991_3456.jpg"},{"title":"3.346\" Megalodon Fossil Tooth","price":"$86.00","url":"https://www.etsy.com/listing/4446741012/3346-megalodon-fossil-tooth-b","img":"https://i.etsystatic.com/21787500/r/il/cde567/7637741542/il_794xN.7637741542_7890.jpg"},{"title":"5.787\" Megalodon Fossil Tooth","price":"$199.00","url":"https://www.etsy.com/listing/4446743345/5787-megalodon-fossil-tooth-b","img":"https://i.etsystatic.com/21787500/r/il/fgh890/7685698255/il_794xN.7685698255_1234.jpg"},{"title":"1.75-2.00\" Captain's Choice Mako Pendant","price":"$19.00","url":"https://www.etsy.com/listing/4446745678/captains-choice-mako-pendant","img":"https://i.etsystatic.com/21787500/r/il/ijk123/7685614297/il_794xN.7685614297_5678.jpg"}];
+const VIDEOS = ["Sandtiger-short-031126-2046hrs.mp4","bennie-short-031126-1148hrs.mp4","Pointatbenni2026-03-12 07-27-12.mp4","Swimup-short-3-9-1800hrs.mp4","Nice4inch-short-3-10-1900hrs.mp4"];
+const PAGE_SIZE = 6;
+let shown = 0;
+
+function buildCard(l, i) {
+  const size = (l.title.match(/[\d.]+"/)||[''])[0];
+  const video = VIDEOS[i % VIDEOS.length];
+  const div = document.createElement('div');
+  div.className = 'listing-card';
+  div.innerHTML = `<div class="listing-media" data-state="photo">
+    <img class="listing-photo" src="${l.img}" alt="${l.title}" />
+    <video class="listing-video" src="${video}" muted playsinline loop style="display:none;"></video>
+    <div class="media-hint">click to see more</div>
+  </div>
+  <div class="listing-info">
+    <div class="listing-size">${size}</div>
+    <div class="listing-grade">Display Grade</div>
+    <div class="listing-price">${l.price} <span class="free-ship">FREE SHIPPING</span></div>
+  </div>
+  <a href="${l.url}" target="_blank" class="buy-btn">BUY NOW</a>`;
+
+  const media = div.querySelector('.listing-media');
+  const photo = div.querySelector('.listing-photo');
+  const vid = div.querySelector('.listing-video');
+  const hint = div.querySelector('.media-hint');
+  let state = 0;
+
+  media.addEventListener('click', () => {
+    state = (state + 1) % 3;
+    if (state === 0) {
+      vid.pause(); vid.style.display='none';
+      photo.style.display='block';
+      hint.textContent='click to see more';
+    } else if (state === 1) {
+      // back photo — for now show same image with note
+      photo.style.display='block';
+      vid.style.display='none';
+      hint.textContent='click for video';
+    } else {
+      photo.style.display='none';
+      vid.style.display='block';
+      vid.play();
+      hint.textContent='click to reset';
     }
-    videoEl.addEventListener("ended", () => {
-      current = (current + 1) % videos.length;
-      videoEl.classList.add("fade-out");
-      setTimeout(() => {
-        videoEl.classList.remove("fade-out");
-        loadAndPlay();
-        videoEl.classList.add("fade-in");
-        setTimeout(() => videoEl.classList.remove("fade-in"), 500);
-      }, 480);
-    });
-    loadAndPlay();
+  });
+  return div;
+}
+
+function showMore() {
+  const grid = document.getElementById('listingsGrid');
+  const end = Math.min(shown + PAGE_SIZE, ALL_LISTINGS.length);
+  for (let i = shown; i < end; i++) {
+    grid.appendChild(buildCard(ALL_LISTINGS[i], i));
   }
-  createPlayer(document.getElementById("playerA"), document.getElementById("labelA"), 0);
-  createPlayer(document.getElementById("playerB"), document.getElementById("labelB"), 1);
+  shown = end;
+  const wrap = document.getElementById('seeMoreWrap');
+  wrap.style.display = shown < ALL_LISTINGS.length ? 'block' : 'none';
+}
+
+document.getElementById('seeMoreBtn').addEventListener('click', showMore);
+showMore();
+
+// Rolling video players
+const rollingClips = [
+  { src: "Sandtiger-short-031126-2046hrs.mp4", label: "Sand Tiger Shark - Offshore Discovery" },
+  { src: "bennie-short-031126-1148hrs.mp4",    label: "Fossil Recovery - Offshore Dive" },
+  { src: "Pointatbenni2026-03-12 07-27-12.mp4",label: "Fossil Shark Tooth - Offshore Find" },
+  { src: "Swimup-short-3-9-1800hrs.mp4",       label: "Dive Ascent - Offshore Expedition" },
+  { src: "Nice4inch-short-3-10-1900hrs.mp4",   label: "4-Inch Fossil Shark Tooth - Recovered Offshore" },
+];
+function createPlayer(videoEl, labelEl, startIndex) {
+  let current = startIndex % rollingClips.length;
+  function load() {
+    labelEl.textContent = rollingClips[current].label;
+    videoEl.src = rollingClips[current].src;
+    videoEl.load(); videoEl.play().catch(()=>{});
+  }
+  videoEl.addEventListener('ended', () => {
+    current = (current+1)%rollingClips.length;
+    videoEl.classList.add('fade-out');
+    setTimeout(()=>{ videoEl.classList.remove('fade-out'); load(); videoEl.classList.add('fade-in'); setTimeout(()=>videoEl.classList.remove('fade-in'),500); },480);
+  });
+  load();
+}
+createPlayer(document.getElementById('playerA'),document.getElementById('labelA'),0);
+createPlayer(document.getElementById('playerB'),document.getElementById('labelB'),1);
 </script>
 </body>
 </html>
