@@ -1,381 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DeepWaterFossils</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: system-ui, sans-serif;
-      background: #081c25;
-      color: #fff;
-    }
-
-    /* ── SHARED ── */
-    .gold-btn {
-      background: linear-gradient(135deg, #c8960c, #f0c040);
-      color: #000;
-      font-weight: 700;
-      font-size: 14px;
-      letter-spacing: 0.05em;
-      border: none;
-      border-radius: 6px;
-      padding: 11px 32px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      text-align: center;
-      transition: opacity 0.15s;
-    }
-    .gold-btn:hover { opacity: 0.85; }
-    .gold-btn-full { width: 100%; padding: 10px 16px; }
-
-    .section-wrap {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 32px;
-    }
-
-    /* ════════════════════════════════════
-       SECTION 1 — BANNER
-    ════════════════════════════════════ */
-    .banner {
-      background: #081c25;
-      padding: clamp(16px, 2.5vw, 40px) 0 0;
-    }
-
-    .banner-inner {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 32px;
-      gap: 48px;
-    }
-
-    .banner-left {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-
-    .brand-top {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-text-col {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .brand-name-img {
-      height: clamp(28px, 3vw, 44px);
-      width: auto;
-      object-fit: contain;
-      display: block;
-    }
-
-    .dwf-img {
-      height: clamp(32px, 3.5vw, 52px);
-      width: auto;
-      object-fit: contain;
-      display: block;
-    }
-
-    .logo-box {
-      background: #fff;
-      padding: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .logo-box img {
-      height: clamp(80px, 9vw, 140px);
-      width: auto;
-      object-fit: contain;
-      display: block;
-    }
-
-    .brand-hook-img {
-      height: clamp(40px, 4.5vw, 64px);
-      width: auto;
-      object-fit: contain;
-      margin-top: 10px;
-      display: block;
-    }
-
-    .banner-media {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 32px;
-    }
-
-    .banner-media img {
-      height: clamp(120px, 14vw, 200px);
-      width: auto;
-      object-fit: contain;
-      flex-shrink: 0;
-      display: block;
-    }
-
-    .dive-photo { border-radius: 12px; overflow: hidden; }
-
-    /* ════════════════════════════════════
-       SECTION 2 — HERO TEXT + CTA
-    ════════════════════════════════════ */
-    .hero {
-      background: #081c25;
-      text-align: center;
-      padding: clamp(24px, 4vw, 56px) 32px clamp(32px, 5vw, 72px);
-    }
-
-    .hero h1 {
-      font-size: clamp(22px, 3.2vw, 40px);
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
-    .hero .sub1 {
-      font-size: clamp(14px, 1.6vw, 20px);
-      color: #fff;
-      margin-bottom: 6px;
-    }
-
-    .hero .sub2 {
-      font-size: clamp(12px, 1.2vw, 16px);
-      color: #bbb;
-      margin-bottom: 28px;
-    }
-
-    /* ════════════════════════════════════
-       SECTION 3 — FEATURED FOSSILS
-    ════════════════════════════════════ */
-    .featured {
-      background: #0a2030;
-      padding: clamp(24px, 4vw, 64px) 0;
-    }
-
-    .section-header {
-      text-align: center;
-      font-size: clamp(14px, 1.6vw, 20px);
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      margin-bottom: clamp(20px, 3vw, 40px);
-    }
-    .section-header.white { color: #fff; }
-    .section-header.gold  { color: #f0c040; }
-
-    .cards-row {
-      display: flex;
-      gap: 20px;
-    }
-
-    .card {
-      flex: 1;
-      background: #081c25;
-      border: 1px solid #1a3a4a;
-      border-radius: 8px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .card-photo {
-      background: #0d3a4a;
-      aspect-ratio: 1 / 1;
-      width: 100%;
-    }
-
-    .card-body {
-      padding: 14px 16px 16px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      gap: 4px;
-    }
-
-    .card-label {
-      font-size: 14px;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .card-sub {
-      font-size: 12px;
-      color: #888;
-      margin-bottom: 10px;
-      flex: 1;
-    }
-
-    /* ════════════════════════════════════
-       SECTION 4 — HOW THESE FOSSILS ARE FOUND
-    ════════════════════════════════════ */
-    .how-found {
-      background: #081c25;
-      padding: clamp(24px, 4vw, 64px) 0;
-    }
-
-    .panels-row {
-      display: flex;
-      gap: 20px;
-    }
-
-    .video-card {
-      flex: 1;
-      background: #081c25;
-      border: 1px solid #1a3a4a;
-      border-radius: 8px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .video-placeholder {
-      background: #0d3a4a;
-      aspect-ratio: 16 / 9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .play-circle {
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.15);
-      border: 2px solid rgba(255, 255, 255, 0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      color: #fff;
-      padding-left: 4px;
-    }
-
-    .video-card-body {
-      padding: 14px 16px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DeepWaterFossils</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, sans-serif; background: #081c25; color: #fff; }
+.gold-btn { background: linear-gradient(135deg, #c8960c, #f0c040); color: #000; font-weight: 700; font-size: 14px; letter-spacing: 0.05em; border: none; border-radius: 6px; padding: 11px 32px; cursor: pointer; text-decoration: none; display: inline-block; text-align: center; transition: opacity 0.15s; }
+.gold-btn:hover { opacity: 0.85; }
+.gold-btn-full { width: 100%; padding: 10px 16px; }
+.section-wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+.banner { background: #081c25; padding: clamp(16px, 2.5vw, 40px) 0 0; }
+.banner-inner { display: flex; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 32px; gap: 48px; }
+.banner-left { display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; }
+.brand-top { display: flex; align-items: center; gap: 12px; }
+.brand-text-col { display: flex; flex-direction: column; gap: 4px; }
+.brand-name-img { height: clamp(28px, 3vw, 44px); width: auto; object-fit: contain; display: block; }
+.dwf-img { height: clamp(32px, 3.5vw, 52px); width: auto; object-fit: contain; display: block; }
+.logo-box { background: #fff; padding: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.logo-box img { height: clamp(80px, 9vw, 140px); width: auto; object-fit: contain; display: block; }
+.brand-hook-img { height: clamp(40px, 4.5vw, 64px); width: auto; object-fit: contain; margin-top: 10px; display: block; }
+.banner-media { display: flex; align-items: center; justify-content: center; gap: 32px; }
+.banner-media img { height: clamp(120px, 14vw, 200px); width: auto; object-fit: contain; flex-shrink: 0; display: block; }
+.dive-photo { border-radius: 12px; overflow: hidden; }
+.hero { background: #081c25; text-align: center; padding: clamp(24px, 4vw, 56px) 32px clamp(32px, 5vw, 72px); }
+.hero h1 { font-size: clamp(22px, 3.2vw, 40px); font-weight: 800; color: #fff; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
+.hero .sub1 { font-size: clamp(14px, 1.6vw, 20px); color: #fff; margin-bottom: 6px; }
+.hero .sub2 { font-size: clamp(12px, 1.2vw, 16px); color: #bbb; margin-bottom: 28px; }
+.featured { background: #0a2030; padding: clamp(24px, 4vw, 64px) 0; }
+.section-header { text-align: center; font-size: clamp(14px, 1.6vw, 20px); font-weight: 700; letter-spacing: 0.14em; margin-bottom: clamp(20px, 3vw, 40px); }
+.section-header.white { color: #fff; }
+.section-header.gold { color: #f0c040; }
+.cards-row { display: flex; gap: 20px; }
+.card { flex: 1; background: #081c25; border: 1px solid #1a3a4a; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+.card-photo { background: #0d3a4a; aspect-ratio: 1 / 1; width: 100%; }
+.card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; gap: 4px; }
+.card-label { font-size: 14px; font-weight: 700; color: #fff; }
+.card-sub { font-size: 12px; color: #888; margin-bottom: 10px; flex: 1; }
+.how-found { background: #081c25; padding: clamp(24px, 4vw, 64px) 0; }
+.panels-row { display: flex; gap: 20px; }
+.video-card { flex: 1; background: #081c25; border: 1px solid #1a3a4a; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+.video-card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 4px; }
+.video-player-wrap { position: relative; aspect-ratio: 16 / 9; background: #0d3a4a; overflow: hidden; }
+.video-player-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.video-player-wrap video.fade-out { animation: fadeOut 0.5s forwards; }
+.video-player-wrap video.fade-in { animation: fadeIn 0.5s forwards; }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+</style>
 </head>
 <body>
-
-  <!-- ═══ SECTION 1: BANNER ═══ -->
-  <section class="banner">
-    <div class="banner-inner">
-      <div class="banner-left">
-        <div class="brand-top">
-          <div class="brand-text-col">
-            <img class="brand-name-img" src="assets/brand-name.png" alt="DeepWaterFossils" />
-            <img class="dwf-img"        src="assets/dwf.png"        alt="DWF" />
-          </div>
-          <div class="logo-box">
-            <img src="assets/logo.png" alt="DWF Logo" />
-          </div>
+<section class="banner">
+  <div class="banner-inner">
+    <div class="banner-left">
+      <div class="brand-top">
+        <div class="brand-text-col">
+          <img class="brand-name-img" src="assets/brand-name.png" alt="DeepWaterFossils" />
+          <img class="dwf-img" src="assets/dwf.png" alt="DWF" />
         </div>
-        <img class="brand-hook-img" src="assets/brand-hook.png"
-             alt="Real Fossil Shark Teeth. Found. Not Faked." />
+        <div class="logo-box"><img src="assets/logo.png" alt="DWF Logo" /></div>
       </div>
-
-      <div class="banner-media">
-        <img src="assets/nitrox-shaka.png" alt="Shaka" />
-        <img class="dive-photo" src="assets/brand-photo.png" alt="Dive Photo" />
+      <img class="brand-hook-img" src="assets/brand-hook.png" alt="Real Fossil Shark Teeth. Found. Not Faked." />
+    </div>
+    <div class="banner-media">
+      <img src="assets/nitrox-shaka.png" alt="Shaka" />
+      <img class="dive-photo" src="assets/brand-photo.png" alt="Dive Photo" />
+    </div>
+  </div>
+</section>
+<section class="hero">
+  <h1>Real Fossil Shark Teeth</h1>
+  <p class="sub1">Recovered While Diving Offshore</p>
+  <p class="sub2">Collect Authentic Megalodon &amp; Fossil Shark Teeth</p>
+  <a href="https://deepwaterfossils.etsy.com" class="gold-btn">SHOP FOSSILS</a>
+</section>
+<section class="featured">
+  <div class="section-wrap">
+    <div class="section-header white">--- FEATURED FOSSILS ---</div>
+    <div class="cards-row">
+      <div class="card"><div class="card-photo"></div><div class="card-body"><div class="card-label">Megalodon Tooth - 4.6"</div><div class="card-sub">Recovered Offshore</div><a href="#" class="gold-btn gold-btn-full">VIEW SPECIMEN</a></div></div>
+      <div class="card"><div class="card-photo"></div><div class="card-body"><div class="card-label">Fossil Shark Tooth - 3.7"</div><div class="card-sub">Recovered Offshore</div><a href="#" class="gold-btn gold-btn-full">VIEW SPECIMEN</a></div></div>
+      <div class="card"><div class="card-photo"></div><div class="card-body"><div class="card-label">Megalodon Tooth - 5.1"</div><div class="card-sub">Recovered Offshore</div><a href="#" class="gold-btn gold-btn-full">VIEW SPECIMEN</a></div></div>
+    </div>
+  </div>
+</section>
+<section class="how-found">
+  <div class="section-wrap">
+    <div class="section-header gold">--- HOW THESE FOSSILS ARE FOUND ---</div>
+    <div class="panels-row">
+      <div class="video-card">
+        <div class="video-player-wrap"><video id="playerA" autoplay muted playsinline></video></div>
+        <div class="video-card-body"><div class="card-label" id="labelA">Loading...</div><div class="card-sub">Recovered Offshore</div><a href="https://deepwaterfossils.etsy.com" class="gold-btn gold-btn-full">SHOP FOSSILS</a></div>
+      </div>
+      <div class="video-card">
+        <div class="video-player-wrap"><video id="playerB" autoplay muted playsinline></video></div>
+        <div class="video-card-body"><div class="card-label" id="labelB">Loading...</div><div class="card-sub">Recovered Offshore</div><a href="https://deepwaterfossils.etsy.com" class="gold-btn gold-btn-full">SHOP FOSSILS</a></div>
       </div>
     </div>
-  </section>
-
-  <!-- ═══ SECTION 2: HERO TEXT + CTA ═══ -->
-  <section class="hero">
-    <h1>Real Fossil Shark Teeth</h1>
-    <p class="sub1">Recovered While Diving Offshore</p>
-    <p class="sub2">Collect Authentic Megalodon &amp; Fossil Shark Teeth</p>
-    <a href="https://deepwaterfossils.com" class="gold-btn">SHOP FOSSILS</a>
-  </section>
-
-  <!-- ═══ SECTION 3: FEATURED FOSSILS ═══ -->
-  <section class="featured">
-    <div class="section-wrap">
-      <div class="section-header white">——— FEATURED FOSSILS ———</div>
-      <div class="cards-row">
-
-        <div class="card">
-          <div class="card-photo"></div>
-          <div class="card-body">
-            <div class="card-label">Megalodon Tooth &#8211; 4.6&#8221;</div>
-            <div class="card-sub">Recovered Offshore</div>
-            <a href="#" class="gold-btn gold-btn-full">VIEW SPECIMEN</a>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-photo"></div>
-          <div class="card-body">
-            <div class="card-label">Fossil Shark Tooth &#8211; 3.7&#8221;</div>
-            <div class="card-sub">Recovered Offshore</div>
-            <a href="#" class="gold-btn gold-btn-full">VIEW SPECIMEN</a>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-photo"></div>
-          <div class="card-body">
-            <div class="card-label">Megalodon Tooth &#8211; 5.1&#8221;</div>
-            <div class="card-sub">Recovered Offshore</div>
-            <a href="#" class="gold-btn gold-btn-full">VIEW SPECIMEN</a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ SECTION 4: HOW THESE FOSSILS ARE FOUND ═══ -->
-  <section class="how-found">
-    <div class="section-wrap">
-      <div class="section-header gold">——— HOW THESE FOSSILS ARE FOUND ———</div>
-      <div class="panels-row">
-
-        <div class="video-card">
-          <div class="video-placeholder">
-            <div class="play-circle">&#9654;</div>
-          </div>
-          <div class="video-card-body">
-            <div class="card-label">Megalodon Tooth &#8211; 4.6 inches</div>
-            <div class="card-sub">Recovered Offshore</div>
-            <a href="#" class="gold-btn gold-btn-full">VIEW SPECIMEN</a>
-          </div>
-        </div>
-
-        <div class="video-card">
-          <div class="video-placeholder">
-            <div class="play-circle">&#9654;</div>
-          </div>
-          <div class="video-card-body">
-            <div class="card-label">Actual Offshore Fossil Dive</div>
-            <div class="card-sub">Recovered Offshore</div>
-            <a href="#" class="gold-btn gold-btn-full">VIEW SPECIMEN</a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
+  </div>
+</section>
+<script>
+  const videos = [
+    { src: "assets/videos/Sandtiger-short-031126-2046hrs.mp4",  label: "Sand Tiger Shark - Offshore Discovery" },
+    { src: "assets/videos/bennie-short-031126-1148hrs.mp4",     label: "Fossil Recovery - Offshore Dive" },
+    { src: "assets/videos/Pointatbenni2026-03-12 07-27-12.mp4", label: "Fossil Shark Tooth - Offshore Find" },
+    { src: "assets/videos/Swimup-short-3-9-1800hrs.mp4",        label: "Dive Ascent - Offshore Expedition" },
+    { src: "assets/videos/Nice4inch-short-3-10-1900hrs.mp4",    label: "4-Inch Fossil Shark Tooth - Recovered Offshore" },
+  ];
+  function createPlayer(videoEl, labelEl, startIndex) {
+    let current = startIndex % videos.length;
+    function loadAndPlay() {
+      const clip = videos[current];
+      labelEl.textContent = clip.label;
+      videoEl.src = clip.src;
+      videoEl.load();
+      videoEl.play().catch(() => {});
+    }
+    videoEl.addEventListener("ended", () => {
+      current = (current + 1) % videos.length;
+      videoEl.classList.add("fade-out");
+      setTimeout(() => {
+        videoEl.classList.remove("fade-out");
+        loadAndPlay();
+        videoEl.classList.add("fade-in");
+        setTimeout(() => videoEl.classList.remove("fade-in"), 500);
+      }, 480);
+    });
+    loadAndPlay();
+  }
+  createPlayer(document.getElementById("playerA"), document.getElementById("labelA"), 0);
+  createPlayer(document.getElementById("playerB"), document.getElementById("labelB"), 1);
+</script>
 </body>
 </html>
