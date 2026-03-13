@@ -11,8 +11,15 @@ body { font-family: system-ui, sans-serif; background: #081c25; color: #fff; }
 .gold-btn:hover { opacity: 0.85; }
 .section-wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 32px; }
 .banner { background: #081c25; padding: clamp(16px,2.5vw,40px) 0 0; }
-.banner-inner { display: flex; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 32px; gap: 48px; }
+.banner-inner { display: flex; align-items: stretch; width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 24px; gap: 24px; }
 .banner-left { display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; }
+.banner-video { flex: 0 0 clamp(180px,20vw,280px); display: flex; flex-direction: column; }
+.banner-video .video-card { flex: 1; background: #081c25; border: 1px solid #1a3a4a; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+.banner-video .video-player-wrap { position: relative; aspect-ratio: 9/16; background: #0d3a4a; overflow: hidden; flex: 1; }
+.banner-video .video-player-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.banner-video .video-player-wrap video.fade-out { animation: fadeOut 0.5s forwards; }
+.banner-video .video-player-wrap video.fade-in { animation: fadeIn 0.5s forwards; }
+.banner-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: clamp(12px,2vw,32px) 0; }
 .brand-top { display: flex; align-items: center; gap: 12px; }
 .brand-text-col { display: flex; flex-direction: column; gap: 4px; }
 .brand-name-img { height: clamp(28px,3vw,44px); width: auto; object-fit: contain; display: block; }
@@ -21,7 +28,7 @@ body { font-family: system-ui, sans-serif; background: #081c25; color: #fff; }
 .logo-box img { height: clamp(80px,9vw,140px); width: auto; object-fit: contain; display: block; }
 .brand-hook-img { height: clamp(40px,4.5vw,64px); width: auto; object-fit: contain; margin-top: 10px; display: block; }
 .banner-media { display: flex; align-items: center; justify-content: center; gap: 32px; }
-.banner-media img { height: clamp(120px,14vw,200px); width: auto; object-fit: contain; flex-shrink: 0; display: block; }
+.banner-media img { height: clamp(80px,10vw,140px); width: auto; object-fit: contain; flex-shrink: 0; display: block; }
 .dive-photo { border-radius: 12px; overflow: hidden; }
 .hero { background: #081c25; text-align: center; padding: clamp(24px,4vw,56px) 32px clamp(32px,5vw,72px); }
 .hero h1 { font-size: clamp(22px,3.2vw,40px); font-weight: 800; color: #fff; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
@@ -69,28 +76,44 @@ body { font-family: system-ui, sans-serif; background: #081c25; color: #fff; }
 
 <section class="banner">
   <div class="banner-inner">
-    <div class="banner-left">
-      <div class="brand-top">
-        <div class="brand-text-col">
-          <img class="brand-name-img" src="assets/brand-name.png" alt="DeepWaterFossils" />
-          <img class="dwf-img" src="assets/dwf.png" alt="DWF" />
-        </div>
-        <div class="logo-box"><img src="assets/logo.png" alt="DWF Logo" /></div>
+    <!-- playerA — left -->
+    <div class="banner-video">
+      <div class="video-card">
+        <div class="video-player-wrap"><video id="playerA" autoplay muted playsinline></video></div>
+        <div class="video-card-body"><div class="card-label" id="labelA">Loading...</div><div class="card-sub">Recovered Offshore</div><a href="https://deepwaterfossils.etsy.com" class="gold-btn gold-btn-full">SHOP FOSSILS</a></div>
       </div>
-      <img class="brand-hook-img" src="assets/brand-hook.png" alt="Real Fossil Shark Teeth. Found. Not Faked." />
     </div>
-    <div class="banner-media">
-      <img src="assets/nitrox-shaka.png" alt="Shaka" />
-      <img class="dive-photo" src="assets/brand-photo.png" alt="Dive Photo" />
+    <!-- center brand + hero -->
+    <div class="banner-center">
+      <div class="banner-left">
+        <div class="brand-top">
+          <div class="brand-text-col">
+            <img class="brand-name-img" src="assets/brand-name.png" alt="DeepWaterFossils" />
+            <img class="dwf-img" src="assets/dwf.png" alt="DWF" />
+          </div>
+          <div class="logo-box"><img src="assets/logo.png" alt="DWF Logo" /></div>
+        </div>
+        <img class="brand-hook-img" src="assets/brand-hook.png" alt="Real Fossil Shark Teeth. Found. Not Faked." />
+      </div>
+      <div class="banner-media" style="margin-top:16px;">
+        <img src="assets/nitrox-shaka.png" alt="Shaka" />
+        <img class="dive-photo" src="assets/brand-photo.png" alt="Dive Photo" />
+      </div>
+      <div style="margin-top:24px;">
+        <h1 style="font-size:clamp(18px,2.4vw,34px);font-weight:800;color:#fff;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">Real Fossil Shark Teeth</h1>
+        <p style="font-size:clamp(13px,1.4vw,18px);color:#fff;margin-bottom:4px;">Recovered While Diving Offshore</p>
+        <p style="font-size:clamp(11px,1vw,14px);color:#bbb;margin-bottom:20px;">Collect Authentic Megalodon &amp; Fossil Shark Teeth — Found 20–50 Miles Off the Coast of North Carolina</p>
+        <a href="https://deepwaterfossils.etsy.com" class="gold-btn">SHOP ALL FOSSILS</a>
+      </div>
+    </div>
+    <!-- playerB — right -->
+    <div class="banner-video">
+      <div class="video-card">
+        <div class="video-player-wrap"><video id="playerB" autoplay muted playsinline></video></div>
+        <div class="video-card-body"><div class="card-label" id="labelB">Loading...</div><div class="card-sub">Recovered Offshore</div><a href="https://deepwaterfossils.etsy.com" class="gold-btn gold-btn-full">SHOP MERCHANDISE</a></div>
+      </div>
     </div>
   </div>
-</section>
-
-<section class="hero">
-  <h1>Real Fossil Shark Teeth</h1>
-  <p class="sub1">Recovered While Diving Offshore</p>
-  <p class="sub2">Collect Authentic Megalodon &amp; Fossil Shark Teeth — Found 20–50 Miles Off the Coast of North Carolina</p>
-  <a href="https://deepwaterfossils.etsy.com" class="gold-btn">SHOP ALL FOSSILS</a>
 </section>
 
 <section class="fossils-section">
@@ -103,21 +126,7 @@ body { font-family: system-ui, sans-serif; background: #081c25; color: #fff; }
   </div>
 </section>
 
-<section class="how-found">
-  <div class="section-wrap">
-    <div class="section-header gold">--- HOW THESE FOSSILS ARE FOUND ---</div>
-    <div class="panels-row">
-      <div class="video-card">
-        <div class="video-player-wrap"><video id="playerA" autoplay muted playsinline></video></div>
-        <div class="video-card-body"><div class="card-label" id="labelA">Loading...</div><div class="card-sub">Recovered Offshore</div><a href="https://deepwaterfossils.etsy.com" class="gold-btn gold-btn-full">SHOP FOSSILS</a></div>
-      </div>
-      <div class="video-card">
-        <div class="video-player-wrap"><video id="playerB" autoplay muted playsinline></video></div>
-        <div class="video-card-body"><div class="card-label" id="labelB">Loading...</div><div class="card-sub">Recovered Offshore</div><a href="https://deepwaterfossils.etsy.com" class="gold-btn gold-btn-full">SHOP MERCHANDISE</a></div>
-      </div>
-    </div>
-  </div>
-</section>
+
 
 <script>
 const ALL_LISTINGS = [
