@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DWF Layout Editor</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, sans-serif; background: #0d1117; color: #e6edf3; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── TOOLBAR ── */
+#toolbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px; background: #161b22;
+  border-bottom: 1px solid #30363d; flex-shrink: 0; flex-wrap: wrap;
+}
+#toolbar h1 { font-size: 14px; font-weight: 700; color: #f0c040; letter-spacing: 0.08em; margin-right: 8px; }
+.tb-btn {
+  background: #21262d; border: 1px solid #30363d; color: #e6edf3;
+  font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 6px;
+  cursor: pointer; transition: background 0.15s;
+}
+.tb-btn:hover { background: #30363d; }
+.tb-btn.active { background: #f0c040; color: #000; border-color: #f0c040; }
+.tb-btn.danger { border-color: #f85149; color: #f85149; }
+.tb-btn.danger:hover { background: #f85149; color: #fff; }
+#statusBar { font-size: 11px; color: #8b949e; margin-left: auto; }
+
+/* ── MAIN AREA ── */
+#main { display: flex; flex: 1; overflow: hidden; }
+
+/* ── IFRAME PANEL ── */
+#iframeWrap {
+  flex: 1; position: relative; overflow: auto;
+  background: #010409;
+}
+#siteFrame {
+  width: 1280px; min-height: 100%;
+  border: none; display: block;
+  transform-origin: top left;
+}
+#overlayCanvas {
+  position: absolute; top: 0; left: 0;
+  width: 1280px; pointer-events: none;
+  z-index: 10;
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: 320px; flex-shrink: 0;
+  background: #161b22; border-left: 1px solid #30363d;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+#sidebar h2 { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #8b949e; padding: 12px 16px 8px; border-bottom: 1px solid #30363d; }
+
+/* Element list */
+#elemList { overflow-y: auto; flex: 0 0 auto; max-height: 280px; }
+.elem-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px; cursor: pointer; border-bottom: 1px solid #21262d;
+  font-size: 12px; transition: background 0.1s;
+}
+.elem-row:hover { background: #21262d; }
+.elem-row.selected { background: #1f3a2a; border-left: 3px solid #f0c040; }
+.elem-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.elem-name { flex: 1; font-weight: 600; color: #e6edf3; }
+.elem-tag { font-size: 10px; color: #8b949e; }
+.vis-toggle { background: none; border: none; cursor: pointer; font-size: 14px; color: #8b949e; padding: 0 4px; }
+.vis-toggle:hover { color: #e6edf3; }
+
+/* Props panel */
+#propsPanel { flex: 1; overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.prop-row { display: flex; flex-direction: column; gap: 4px; }
+.prop-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #8b949e; text-transform: uppercase; }
+.prop-inputs { display: flex; gap: 6px; }
+.prop-input {
+  flex: 1; background: #0d1117; border: 1px solid #30363d; color: #e6edf3;
+  font-size: 12px; padding: 5px 8px; border-radius: 4px; font-family: monospace;
+}
+.prop-input:focus { outline: none; border-color: #f0c040; }
+.prop-unit { font-size: 11px; color: #8b949e; align-self: center; }
+
+/* CSS output */
+#cssOutput {
+  border-top: 1px solid #30363d; padding: 12px 16px; flex-shrink: 0;
+}
+#cssOutput h2 { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #8b949e; margin-bottom: 8px; }
+#cssText {
+  width: 100%; height: 120px; background: #0d1117; border: 1px solid #30363d;
+  color: #79c0ff; font-size: 10px; font-family: monospace; padding: 8px;
+  border-radius: 4px; resize: none; line-height: 1.5;
+}
+#copyBtn {
+  margin-top: 8px; width: 100%; background: #238636; border: none;
+  color: #fff; font-size: 12px; font-weight: 700; padding: 7px;
+  border-radius: 6px; cursor: pointer; transition: background 0.15s;
+}
+#copyBtn:hover { background: #2ea043; }
+
+/* ── DRAG HANDLES (injected into iframe via postMessage) ── */
+/* These live in the iframe document — see injectEditor() */
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <h1>⚓ DWF EDITOR</h1>
+  <button class="tb-btn active" id="btnEdit">✏️ Edit Mode</button>
+  <button class="tb-btn" id="btnPreview">👁 Preview</button>
+  <button class="tb-btn" id="btnReset">↺ Reset Selected</button>
+  <button class="tb-btn danger" id="btnResetAll">↺ Reset All</button>
+  <span id="statusBar">Loading site…</span>
+</div>
+
+<div id="main">
+  <div id="iframeWrap">
+    <iframe id="siteFrame" src="https://deepwaterfossils-anthropic.vercel.app"></iframe>
+  </div>
+
+  <div id="sidebar">
+    <h2>ELEMENTS</h2>
+    <div id="elemList"></div>
+
+    <div id="propsPanel">
+      <div style="color:#8b949e;font-size:12px;text-align:center;margin-top:20px;">
+        Select an element to edit its position and size.
+      </div>
+    </div>
+
+    <div id="cssOutput">
+      <h2>GENERATED CSS</h2>
+      <textarea id="cssText" readonly placeholder="Adjust elements to generate CSS overrides…"></textarea>
+      <button id="copyBtn">📋 Copy CSS</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── ELEMENT REGISTRY ──────────────────────────────────────────────────────────
+// Each entry defines a named element with a CSS selector to find it in the iframe.
+const ELEMENTS = [
+  { id:'banner',       name:'Banner',          sel:'.banner',          color:'#f0c040' },
+  { id:'banner-inner', name:'Banner Inner',    sel:'.banner-inner',    color:'#e8a020' },
+  { id:'banner-left',  name:'Brand Block',     sel:'.banner-left',     color:'#58a6ff' },
+  { id:'banner-media', name:'Banner Images',   sel:'.banner-media',    color:'#79c0ff' },
+  { id:'logo-box',     name:'Logo Box',        sel:'.logo-box',        color:'#56d364' },
+  { id:'brand-hook',   name:'Tagline Image',   sel:'.brand-hook-img',  color:'#ffa657' },
+  { id:'hero',         name:'Hero Section',    sel:'.hero',            color:'#bc8cff' },
+  { id:'hero-h1',      name:'Hero Headline',   sel:'.hero h1',         color:'#d2a8ff' },
+  { id:'hero-sub1',    name:'Hero Sub 1',      sel:'.hero .sub1',      color:'#d2a8ff' },
+  { id:'hero-sub2',    name:'Hero Sub 2',      sel:'.hero .sub2',      color:'#d2a8ff' },
+  { id:'hero-btn',     name:'Shop Button',     sel:'.hero .gold-btn',  color:'#f0c040' },
+  { id:'fossils',      name:'Fossils Section', sel:'.fossils-section', color:'#ff7b72' },
+  { id:'how-found',    name:'How Found',       sel:'.how-found',       color:'#ffa657' },
+  { id:'playerA-card', name:'Video Card A',    sel:'.panels-row .video-card:first-child', color:'#39d353' },
+  { id:'playerB-card', name:'Video Card B',    sel:'.panels-row .video-card:last-child',  color:'#26a641' },
+];
+
+const frame = document.getElementById('siteFrame');
+const elemList = document.getElementById('elemList');
+const propsPanel = document.getElementById('propsPanel');
+const cssText = document.getElementById('cssText');
+const statusBar = document.getElementById('statusBar');
+
+let editMode = true;
+let selectedId = null;
+let overrides = {}; // { elemId: { top, left, width, height, position } }
+let hidden = {};    // { elemId: bool }
+let frameReady = false;
+
+// ── IFRAME COMMUNICATION ──────────────────────────────────────────────────────
+// We inject a script into the iframe that handles drag/resize and sends events back.
+
+frame.addEventListener('load', () => {
+  frameReady = true;
+  statusBar.textContent = 'Site loaded. Injecting editor…';
+  injectEditor();
+});
+
+function injectEditor() {
+  const iDoc = frame.contentDocument || frame.contentWindow.document;
+  if (!iDoc) { statusBar.textContent = 'Cannot access iframe (cross-origin). Open editor from same origin.'; return; }
+
+  // Inject styles
+  const style = iDoc.createElement('style');
+  style.id = '__dwf_editor_style';
+  style.textContent = `
+    .__dwf_handle {
+      outline: 2px dashed var(--dwf-color, #f0c040) !important;
+      outline-offset: 2px;
+      position: relative !important;
+      cursor: move !important;
+      user-select: none !important;
+    }
+    .__dwf_handle::before {
+      content: attr(data-dwf-label);
+      position: absolute; top: -22px; left: 0;
+      background: var(--dwf-color, #f0c040); color: #000;
+      font: 700 10px/1 system-ui; padding: 3px 7px; border-radius: 3px;
+      white-space: nowrap; z-index: 99999; pointer-events: none;
+    }
+    .__dwf_resize_handle {
+      position: absolute; width: 14px; height: 14px;
+      background: var(--dwf-color, #f0c040); border: 2px solid #000;
+      border-radius: 3px; z-index: 99999; cursor: se-resize;
+      bottom: -7px; right: -7px;
+    }
+    .__dwf_hidden { opacity: 0.15 !important; pointer-events: none !important; }
+    .__dwf_selected { outline-width: 3px !important; }
+  `;
+  iDoc.head.appendChild(style);
+
+  // Inject script
+  const script = iDoc.createElement('script');
+  script.id = '__dwf_editor_script';
+  script.textContent = `
+(function() {
+  var dragging = null, resizing = null;
+  var startX, startY, startRect, startStyle;
+  var handles = {};
+
+  function getEl(sel) {
+    try { return document.querySelector(sel); } catch(e) { return null; }
+  }
+
+  function ensurePositioned(el) {
+    var pos = window.getComputedStyle(el).position;
+    if (pos === 'static') { el.style.position = 'relative'; }
+  }
+
+  function addResizeHandle(el, color) {
+    var rh = el.querySelector('.__dwf_resize_handle');
+    if (rh) return;
+    rh = document.createElement('div');
+    rh.className = '__dwf_resize_handle';
+    rh.style.setProperty('--dwf-color', color);
+    el.appendChild(rh);
+
+    rh.addEventListener('mousedown', function(e) {
+      e.stopPropagation(); e.preventDefault();
+      resizing = { el: el };
+      startX = e.clientX; startY = e.clientY;
+      var r = el.getBoundingClientRect();
+      startRect = { w: r.width, h: r.height };
+    });
+  }
+
+  window.__dwfActivate = function(id, sel, name, color) {
+    var el = getEl(sel);
+    if (!el) return { ok: false };
+    if (handles[id]) { handles[id].classList.remove('__dwf_selected'); }
+    ensurePositioned(el);
+    el.classList.add('__dwf_handle');
+    el.style.setProperty('--dwf-color', color);
+    el.setAttribute('data-dwf-label', name);
+    el.setAttribute('data-dwf-id', id);
+    addResizeHandle(el, color);
+    handles[id] = el;
+    return { ok: true };
+  };
+
+  window.__dwfDeactivate = function(id) {
+    var el = handles[id];
+    if (!el) return;
+    el.classList.remove('__dwf_handle', '__dwf_selected');
+    el.removeAttribute('data-dwf-label');
+    el.removeAttribute('data-dwf-id');
+    var rh = el.querySelector('.__dwf_resize_handle');
+    if (rh) rh.remove();
+    delete handles[id];
+  };
+
+  window.__dwfSelect = function(id) {
+    Object.values(handles).forEach(function(el) { el.classList.remove('__dwf_selected'); });
+    if (handles[id]) handles[id].classList.add('__dwf_selected');
+  };
+
+  window.__dwfHide = function(id, hidden) {
+    var el = handles[id];
+    if (!el) return;
+    el.classList.toggle('__dwf_hidden', hidden);
+  };
+
+  window.__dwfApplyStyle = function(id, styles) {
+    var el = handles[id];
+    if (!el) return;
+    Object.assign(el.style, styles);
+  };
+
+  window.__dwfReset = function(id) {
+    var el = handles[id];
+    if (!el) return;
+    el.style.top = ''; el.style.left = '';
+    el.style.width = ''; el.style.height = '';
+    el.style.position = '';
+  };
+
+  window.__dwfGetRect = function(id) {
+    var el = handles[id];
+    if (!el) return null;
+    var r = el.getBoundingClientRect();
+    var s = window.getComputedStyle(el);
+    return {
+      top: el.style.top || s.top,
+      left: el.style.left || s.left,
+      width: el.style.width || r.width + 'px',
+      height: el.style.height || r.height + 'px',
+      position: s.position
+    };
+  };
+
+  // Mouse drag
+  document.addEventListener('mousedown', function(e) {
+    var el = e.target.closest('[data-dwf-id]');
+    if (!el) return;
+    if (e.target.classList.contains('__dwf_resize_handle')) return;
+    e.preventDefault();
+    dragging = el;
+    startX = e.clientX; startY = e.clientY;
+    var s = window.getComputedStyle(el);
+    startStyle = {
+      top: parseFloat(el.style.top) || 0,
+      left: parseFloat(el.style.left) || 0
+    };
+    window.parent.postMessage({ type:'dwf_select', id: el.getAttribute('data-dwf-id') }, '*');
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (dragging) {
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      dragging.style.top  = (startStyle.top  + dy) + 'px';
+      dragging.style.left = (startStyle.left + dx) + 'px';
+      window.parent.postMessage({ type:'dwf_moved', id: dragging.getAttribute('data-dwf-id'),
+        top: dragging.style.top, left: dragging.style.left }, '*');
+    }
+    if (resizing) {
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      var nw = Math.max(40, startRect.w + dx);
+      var nh = Math.max(20, startRect.h + dy);
+      resizing.el.style.width  = nw + 'px';
+      resizing.el.style.height = nh + 'px';
+      window.parent.postMessage({ type:'dwf_resized', id: resizing.el.getAttribute('data-dwf-id'),
+        width: resizing.el.style.width, height: resizing.el.style.height }, '*');
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    dragging = null; resizing = null;
+  });
+})();
+  `;
+  iDoc.body.appendChild(script);
+
+  // Build element list UI
+  buildElemList();
+  // Activate all elements
+  ELEMENTS.forEach(function(el) {
+    frame.contentWindow.__dwfActivate(el.id, el.sel, el.name, el.color);
+  });
+
+  statusBar.textContent = 'Editor ready — click an element to select it.';
+}
+
+// ── ELEMENT LIST ──────────────────────────────────────────────────────────────
+function buildElemList() {
+  elemList.innerHTML = '';
+  ELEMENTS.forEach(function(el) {
+    var row = document.createElement('div');
+    row.className = 'elem-row';
+    row.dataset.id = el.id;
+    row.innerHTML =
+      '<div class="elem-dot" style="background:' + el.color + '"></div>' +
+      '<div class="elem-name">' + el.name + '</div>' +
+      '<button class="vis-toggle" data-id="' + el.id + '" title="Toggle visibility">👁</button>';
+    row.addEventListener('click', function(e) {
+      if (e.target.classList.contains('vis-toggle')) return;
+      selectElem(el.id);
+    });
+    row.querySelector('.vis-toggle').addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleHide(el.id);
+    });
+    elemList.appendChild(row);
+  });
+}
+
+function selectElem(id) {
+  selectedId = id;
+  // Highlight row
+  document.querySelectorAll('.elem-row').forEach(function(r) {
+    r.classList.toggle('selected', r.dataset.id === id);
+  });
+  // Tell iframe
+  if (frameReady) frame.contentWindow.__dwfSelect(id);
+  // Show props
+  buildPropsPanel(id);
+}
+
+// ── PROPS PANEL ──────────────────────────────────────────────────────────────
+function buildPropsPanel(id) {
+  var el = ELEMENTS.find(function(e) { return e.id === id; });
+  if (!el) return;
+  var rect = frameReady ? frame.contentWindow.__dwfGetRect(id) : null;
+  var ov = overrides[id] || {};
+
+  propsPanel.innerHTML = '<div class="prop-label" style="color:' + el.color + ';font-size:13px;font-weight:700;margin-bottom:4px;">' + el.name + '</div>';
+
+  function makeRow(label, field, val, unit) {
+    var row = document.createElement('div');
+    row.className = 'prop-row';
+    row.innerHTML = '<div class="prop-label">' + label + '</div>' +
+      '<div class="prop-inputs">' +
+      '<input class="prop-input" type="text" id="prop_' + field + '" value="' + (val||'') + '" />' +
+      '<span class="prop-unit">' + unit + '</span>' +
+      '</div>';
+    row.querySelector('.prop-input').addEventListener('change', function(e) {
+      applyProp(id, field, e.target.value, unit);
+    });
+    propsPanel.appendChild(row);
+  }
+
+  var top  = ov.top   || (rect && rect.top)    || '';
+  var left = ov.left  || (rect && rect.left)   || '';
+  var w    = ov.width || (rect && rect.width)  || '';
+  var h    = ov.height|| (rect && rect.height) || '';
+
+  makeRow('TOP OFFSET',  'top',    stripPx(top),  'px');
+  makeRow('LEFT OFFSET', 'left',   stripPx(left), 'px');
+  makeRow('WIDTH',       'width',  stripPx(w),    'px');
+  makeRow('HEIGHT',      'height', stripPx(h),    'px');
+}
+
+function stripPx(v) { return v ? parseFloat(v) : ''; }
+
+function applyProp(id, field, value, unit) {
+  if (!overrides[id]) overrides[id] = {};
+  var val = value ? (value + unit) : '';
+  overrides[id][field] = val;
+  var styles = {};
+  styles[field] = val;
+  if ((field === 'top' || field === 'left') && val) styles.position = 'relative';
+  if (frameReady) frame.contentWindow.__dwfApplyStyle(id, styles);
+  updateCSS();
+}
+
+// ── HIDE/SHOW ────────────────────────────────────────────────────────────────
+function toggleHide(id) {
+  hidden[id] = !hidden[id];
+  if (frameReady) frame.contentWindow.__dwfHide(id, hidden[id]);
+  if (!overrides[id]) overrides[id] = {};
+  overrides[id].display = hidden[id] ? 'none' : '';
+  updateCSS();
+}
+
+// ── CSS OUTPUT ───────────────────────────────────────────────────────────────
+function updateCSS() {
+  var lines = [];
+  ELEMENTS.forEach(function(el) {
+    var ov = overrides[el.id];
+    if (!ov) return;
+    var props = [];
+    if (ov.top)     props.push('  top: ' + ov.top + ';');
+    if (ov.left)    props.push('  left: ' + ov.left + ';');
+    if (ov.width)   props.push('  width: ' + ov.width + ';');
+    if (ov.height)  props.push('  height: ' + ov.height + ';');
+    if (ov.display) props.push('  display: ' + ov.display + ';');
+    if (props.length) {
+      if (ov.top || ov.left) props.unshift('  position: relative;');
+      lines.push(el.sel + ' {');
+      lines = lines.concat(props);
+      lines.push('}');
+      lines.push('');
+    }
+  });
+  cssText.value = lines.join('\n') || '/* No overrides yet */';
+}
+
+// ── IFRAME → PARENT MESSAGES ─────────────────────────────────────────────────
+window.addEventListener('message', function(e) {
+  if (!e.data || !e.data.type) return;
+  var d = e.data;
+  if (d.type === 'dwf_select') {
+    selectElem(d.id);
+  }
+  if (d.type === 'dwf_moved') {
+    if (!overrides[d.id]) overrides[d.id] = {};
+    overrides[d.id].top  = d.top;
+    overrides[d.id].left = d.left;
+    buildPropsPanel(d.id);
+    updateCSS();
+  }
+  if (d.type === 'dwf_resized') {
+    if (!overrides[d.id]) overrides[d.id] = {};
+    overrides[d.id].width  = d.width;
+    overrides[d.id].height = d.height;
+    buildPropsPanel(d.id);
+    updateCSS();
+  }
+});
+
+// ── TOOLBAR BUTTONS ───────────────────────────────────────────────────────────
+document.getElementById('btnEdit').addEventListener('click', function() {
+  editMode = true;
+  this.classList.add('active');
+  document.getElementById('btnPreview').classList.remove('active');
+  // Re-show all handles
+  if (frameReady) {
+    ELEMENTS.forEach(function(el) {
+      frame.contentWindow.__dwfActivate(el.id, el.sel, el.name, el.color);
+    });
+  }
+});
+
+document.getElementById('btnPreview').addEventListener('click', function() {
+  editMode = false;
+  this.classList.add('active');
+  document.getElementById('btnEdit').classList.remove('active');
+  // Remove handles temporarily
+  if (frameReady) {
+    ELEMENTS.forEach(function(el) {
+      frame.contentWindow.__dwfDeactivate(el.id);
+    });
+  }
+});
+
+document.getElementById('btnReset').addEventListener('click', function() {
+  if (!selectedId) return;
+  delete overrides[selectedId];
+  if (frameReady) frame.contentWindow.__dwfReset(selectedId);
+  buildPropsPanel(selectedId);
+  updateCSS();
+});
+
+document.getElementById('btnResetAll').addEventListener('click', function() {
+  if (!confirm('Reset all element overrides?')) return;
+  overrides = {};
+  hidden = {};
+  if (frameReady) {
+    ELEMENTS.forEach(function(el) {
+      frame.contentWindow.__dwfReset(el.id);
+    });
+  }
+  if (selectedId) buildPropsPanel(selectedId);
+  updateCSS();
+});
+
+document.getElementById('copyBtn').addEventListener('click', function() {
+  cssText.select();
+  document.execCommand('copy');
+  this.textContent = '✅ Copied!';
+  setTimeout(() => { this.textContent = '📋 Copy CSS'; }, 2000);
+});
+
+// ── SCALE IFRAME TO FIT ───────────────────────────────────────────────────────
+function scaleFrame() {
+  var wrap = document.getElementById('iframeWrap');
+  var scale = Math.min(1, wrap.clientWidth / 1280);
+  frame.style.transform = 'scale(' + scale + ')';
+  frame.style.height = (wrap.clientHeight / scale) + 'px';
+}
+window.addEventListener('resize', scaleFrame);
+scaleFrame();
+</script>
+</body>
+</html>
