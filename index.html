@@ -120,8 +120,6 @@ body { font-family: system-ui, sans-serif; background: #081c25; color: #fff; }
 </section>
 
 <script>
-// ALL 27 LISTINGS — real Etsy photo URLs scraped from each listing page.
-// photos[] cycles on tap: photo1 → photo2 → photo3 → video → reset.
 const ALL_LISTINGS = [
   {
     title:"5.118\" Megalodon Fossil Tooth", price:"$128.69",
@@ -182,7 +180,7 @@ const ALL_LISTINGS = [
     url:"https://www.etsy.com/listing/4446698027/5827-megalodon-fossil-tooth",
     photos:[
       "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/45819b/7637792362/il_794xN.7637792362_joh3.jpg",
-      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/c267bb/7637792374/il_794xN.7637792374_o1ct.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/c267bb/il_794xN.7637792374_o1ct.jpg",
       "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/1b28de/7637792376/il_794xN.7637792376_dh7i.jpg"
     ]
   },
@@ -383,6 +381,20 @@ const videoAssign = ALL_LISTINGS.map(function() {
   return VIDEOS[Math.floor(Math.random() * VIDEOS.length)];
 });
 
+// ── PRELOAD ALL LISTING PHOTOS ──────────────────────────────────────────────
+// Creates Image objects for every photo in every listing immediately at page
+// load. The browser fetches and caches them in the background so clicks are
+// instant. Objects are kept in the array to prevent garbage collection.
+const _preloadCache = [];
+ALL_LISTINGS.forEach(function(listing) {
+  listing.photos.forEach(function(url) {
+    var img = new Image();
+    img.src = url;
+    _preloadCache.push(img);
+  });
+});
+// ────────────────────────────────────────────────────────────────────────────
+
 function buildCard(listing, cardIndex) {
   var sizeMatch = listing.title.match(/([\d.]+)["″]/);
   var size      = sizeMatch ? sizeMatch[1] + '"' : '';
@@ -393,7 +405,6 @@ function buildCard(listing, cardIndex) {
   var card = document.createElement('div');
   card.className = 'listing-card';
 
-  // Dots: one per photo + one for video state
   var dotsHTML = '';
   for (var d = 0; d < photos.length; d++) {
     dotsHTML += '<span class="dot' + (d === 0 ? ' active' : '') + '"></span>';
@@ -433,7 +444,7 @@ function buildCard(listing, cardIndex) {
       vidEl.pause();
       vidEl.style.display = 'none';
       photoEl.style.display = 'block';
-      photoEl.src = photos[state];
+      photoEl.src = photos[state]; // instant — already cached by preloader
       hintEl.textContent = state < photos.length - 1 ? 'tap to see more \u203a' : 'tap for video \u203a';
     } else {
       photoEl.style.display = 'none';
