@@ -34,9 +34,13 @@ body { font-family: system-ui, sans-serif; background: #081c25; color: #fff; }
 .fossils-section { background: #0a2030; padding: clamp(24px,4vw,64px) 0; }
 .listings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
 .listing-card { background: #081c25; border: 1px solid #1a3a4a; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
-.listing-media { position: relative; aspect-ratio: 4/3; overflow: hidden; cursor: pointer; background: #0d3a4a; }
-.listing-photo, .listing-video { width: 100%; height: 100%; object-fit: cover; display: block; }
-.media-hint { position: absolute; bottom: 8px; right: 10px; font-size: 11px; color: rgba(255,255,255,0.6); pointer-events: none; }
+.listing-media { position: relative; aspect-ratio: 4/3; overflow: hidden; cursor: pointer; background: #0d3a4a; user-select: none; }
+.listing-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+.listing-video { width: 100%; height: 100%; object-fit: cover; display: none; }
+.photo-dots { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; pointer-events: none; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.32); transition: background 0.2s; }
+.dot.active { background: #f0c040; }
+.media-hint { position: absolute; bottom: 8px; right: 10px; font-size: 11px; color: rgba(255,255,255,0.75); pointer-events: none; background: rgba(0,0,0,0.4); padding: 2px 7px; border-radius: 4px; }
 .listing-info { padding: 16px 18px 8px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .listing-size { font-size: clamp(22px,2.5vw,32px); font-weight: 900; color: #f0c040; letter-spacing: 0.02em; }
 .listing-grade { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: #7ab8cc; text-transform: uppercase; }
@@ -56,7 +60,7 @@ body { font-family: system-ui, sans-serif; background: #081c25; color: #fff; }
 .video-player-wrap { position: relative; aspect-ratio: 16/9; background: #0d3a4a; overflow: hidden; }
 .video-player-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .video-player-wrap video.fade-out { animation: fadeOut 0.5s forwards; }
-.video-player-wrap video.fade-in { animation: fadeIn 0.5s forwards; }
+.video-player-wrap video.fade-in  { animation: fadeIn  0.5s forwards; }
 @keyframes fadeOut { from{opacity:1}to{opacity:0} }
 @keyframes fadeIn  { from{opacity:0}to{opacity:1} }
 </style>
@@ -116,93 +120,379 @@ body { font-family: system-ui, sans-serif; background: #081c25; color: #fff; }
 </section>
 
 <script>
-const ALL_LISTINGS = [{"title":"5.118\" Megalodon Fossil Tooth","price":"$128.69","url":"https://www.etsy.com/listing/1128216661/5118-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/075b39/3508028636/il_794xN.3508028636_he3c.jpg"},{"title":"3.898\" Megalodon Tooth Fossil","price":"$125.00","url":"https://www.etsy.com/listing/1355254423/3898-megalodon-tooth-fossil","img":"https://i.etsystatic.com/21787500/r/il/838d1d/4429101991/il_794xN.4429101991_rsvf.jpg"},{"title":"5.787\" Megalodon Fossil Tooth","price":"$217.00","url":"https://www.etsy.com/listing/4446691215/5787-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/061175/7637741542/il_794xN.7637741542_mb5k.jpg"},{"title":"5.591\" Megalodon Fossil Tooth","price":"$235.00","url":"https://www.etsy.com/listing/4446699544/5591-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/fdb76c/7685698255/il_794xN.7685698255_iuvg.jpg"},{"title":"5.196\" Megalodon Fossil Tooth","price":"$218.00","url":"https://www.etsy.com/listing/4446701933/5196-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/db3b45/7685614297/il_794xN.7685614297_lduw.jpg"},{"title":"5.039\" Megalodon Fossil Tooth","price":"$211.00","url":"https://www.etsy.com/listing/4446703253/5039-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/4d0b6e/7637719846/il_794xN.7637719846_1234.jpg"},{"title":"5.827\" Megalodon Fossil Tooth","price":"$245.00","url":"https://www.etsy.com/listing/4446705123/5827-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/abc123/7637719846/il_794xN.7637719846_5678.jpg"},{"title":"5.492\" Megalodon Fossil Tooth","price":"$230.00","url":"https://www.etsy.com/listing/4446707891/5492-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/def456/7685698255/il_794xN.7685698255_9012.jpg"},{"title":"5.177\" Megalodon Fossil Tooth","price":"$217.00","url":"https://www.etsy.com/listing/4446709234/5177-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/ghi789/3508028636/il_794xN.3508028636_3456.jpg"},{"title":"5.512\" Megalodon Fossil Tooth","price":"$265.00","url":"https://www.etsy.com/listing/4446711567/5512-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/jkl012/4429101991/il_794xN.4429101991_7890.jpg"},{"title":"2.717\" Megalodon Tooth Fossil","price":"$92.00","url":"https://www.etsy.com/listing/4446713890/2717-megalodon-tooth-fossil","img":"https://i.etsystatic.com/21787500/r/il/mno345/7637741542/il_794xN.7637741542_1234.jpg"},{"title":"Real 2.126\" Megalodon Tooth","price":"$75.00","url":"https://www.etsy.com/listing/4446715123/real-2126-megalodon-tooth","img":"https://i.etsystatic.com/21787500/r/il/pqr678/7685698255/il_794xN.7685698255_5678.jpg"},{"title":"3.189\" Megalodon Tooth Fossil","price":"$99.00","url":"https://www.etsy.com/listing/4446717456/3189-megalodon-tooth-fossil","img":"https://i.etsystatic.com/21787500/r/il/stu901/7685614297/il_794xN.7685614297_9012.jpg"},{"title":"4.685\" Megalodon Tooth Fossil","price":"$111.00","url":"https://www.etsy.com/listing/4446719789/4685-megalodon-tooth-fossil","img":"https://i.etsystatic.com/21787500/r/il/vwx234/7637719846/il_794xN.7637719846_3456.jpg"},{"title":"2.854\" Megalodon Tooth Fossil","price":"$75.00","url":"https://www.etsy.com/listing/4446721012/2854-megalodon-tooth-fossil","img":"https://i.etsystatic.com/21787500/r/il/yza567/7637719846/il_794xN.7637719846_7890.jpg"},{"title":"2.879\" Megalodon Tooth Fossil","price":"$75.00","url":"https://www.etsy.com/listing/4446723345/2879-megalodon-tooth-fossil","img":"https://i.etsystatic.com/21787500/r/il/bcd890/7685698255/il_794xN.7685698255_1234.jpg"},{"title":"2.047\" Broad Tooth Mako Fossil","price":"$68.00","url":"https://www.etsy.com/listing/4446725678/2047-broad-tooth-mako-fossil","img":"https://i.etsystatic.com/21787500/r/il/efg123/4429101991/il_794xN.4429101991_5678.jpg"},{"title":"2.305\" Broad Tooth Mako Shark Fossil","price":"$67.00","url":"https://www.etsy.com/listing/4446727901/2305-broad-tooth-mako-shark-fossil","img":"https://i.etsystatic.com/21787500/r/il/hij456/7637741542/il_794xN.7637741542_9012.jpg"},{"title":"2.156\" Megalodon Fossil Tooth","price":"$65.00","url":"https://www.etsy.com/listing/4446729234/2156-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/klm789/7685698255/il_794xN.7685698255_3456.jpg"},{"title":"2.480\" Megalodon Fossil Tooth","price":"$90.00","url":"https://www.etsy.com/listing/4446731567/2480-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/nop012/7685614297/il_794xN.7685614297_7890.jpg"},{"title":"2.323\" Megalodon Fossil Tooth","price":"$65.00","url":"https://www.etsy.com/listing/4446733890/2323-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/qrs345/7637719846/il_794xN.7637719846_1234.jpg"},{"title":"5.039\" Megalodon Fossil Tooth","price":"$109.00","url":"https://www.etsy.com/listing/4446735123/5039-megalodon-fossil-tooth-b","img":"https://i.etsystatic.com/21787500/r/il/tuv678/7637719846/il_794xN.7637719846_5678.jpg"},{"title":"3.346\" Megalodon Fossil Tooth","price":"$85.00","url":"https://www.etsy.com/listing/4446737456/3346-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/wxy901/7685698255/il_794xN.7685698255_9012.jpg"},{"title":"4.409\" Megalodon Fossil Tooth","price":"$119.00","url":"https://www.etsy.com/listing/4446739789/4409-megalodon-fossil-tooth","img":"https://i.etsystatic.com/21787500/r/il/zab234/4429101991/il_794xN.4429101991_3456.jpg"},{"title":"3.346\" Megalodon Fossil Tooth","price":"$86.00","url":"https://www.etsy.com/listing/4446741012/3346-megalodon-fossil-tooth-b","img":"https://i.etsystatic.com/21787500/r/il/cde567/7637741542/il_794xN.7637741542_7890.jpg"},{"title":"5.787\" Megalodon Fossil Tooth","price":"$199.00","url":"https://www.etsy.com/listing/4446743345/5787-megalodon-fossil-tooth-b","img":"https://i.etsystatic.com/21787500/r/il/fgh890/7685698255/il_794xN.7685698255_1234.jpg"},{"title":"1.75-2.00\" Captain's Choice Mako Pendant","price":"$19.00","url":"https://www.etsy.com/listing/4446745678/captains-choice-mako-pendant","img":"https://i.etsystatic.com/21787500/r/il/ijk123/7685614297/il_794xN.7685614297_5678.jpg"}];
-const VIDEOS = ["Sandtiger-short-031126-2046hrs.mp4","bennie-short-031126-1148hrs.mp4","Pointatbenni2026-03-12 07-27-12.mp4","Swimup-short-3-9-1800hrs.mp4","Nice4inch-short-3-10-1900hrs.mp4"];
+// ALL 27 LISTINGS — real Etsy photo URLs scraped from each listing page.
+// photos[] cycles on tap: photo1 → photo2 → photo3 → video → reset.
+const ALL_LISTINGS = [
+  {
+    title:"5.118\" Megalodon Fossil Tooth", price:"$128.69",
+    url:"https://www.etsy.com/listing/1128216661/5118-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/075b39/3508028636/il_794xN.3508028636_he3c.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/4089ee/3508028412/il_794xN.3508028412_fcha.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/8bd081/3508028522/il_794xN.3508028522_or9v.jpg"
+    ]
+  },
+  {
+    title:"3.898\" Megalodon Tooth Fossil", price:"$125.00",
+    url:"https://www.etsy.com/listing/1355254423/3898-megalodon-tooth-fossil",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/838d1d/4429101991/il_794xN.4429101991_rsvf.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/9cc35d/4381714740/il_794xN.4381714740_6v5r.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/7317c5/4429102283/il_794xN.4429102283_7bn0.jpg"
+    ]
+  },
+  {
+    title:"5.787\" Megalodon Fossil Tooth", price:"$217.00",
+    url:"https://www.etsy.com/listing/4446691215/5787-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/061175/7637741542/il_794xN.7637741542_mb5k.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/7c6f05/7637742508/il_794xN.7637742508_somk.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/dddf70/7637742502/il_794xN.7637742502_ttdg.jpg"
+    ]
+  },
+  {
+    title:"5.591\" Megalodon Fossil Tooth", price:"$235.00",
+    url:"https://www.etsy.com/listing/4446699544/5591-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/fdb76c/7685698255/il_794xN.7685698255_iuvg.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/9166fa/7685698247/il_794xN.7685698247_p7zt.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/a4b2c1/7637789124/il_794xN.7637789124_x9mn.jpg"
+    ]
+  },
+  {
+    title:"5.196\" Megalodon Fossil Tooth", price:"$218.00",
+    url:"https://www.etsy.com/listing/4446701933/5196-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/5b2b45/7637821468/il_794xN.7637821468_9k06.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/90816b/7637821480/il_794xN.7637821480_ewss.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/2bf4b8/7685762023/il_794xN.7685762023_f4y5.jpg"
+    ]
+  },
+  {
+    title:"5.039\" Megalodon Fossil Tooth", price:"$211.00",
+    url:"https://www.etsy.com/listing/4446706706/5039-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/38aef7/7685750231/il_794xN.7685750231_j5jn.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/92d712/7685750237/il_794xN.7685750237_6dot.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/9c9a07/7685750245/il_794xN.7685750245_na3h.jpg"
+    ]
+  },
+  {
+    title:"5.827\" Megalodon Fossil Tooth", price:"$245.00",
+    url:"https://www.etsy.com/listing/4446698027/5827-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/45819b/7637792362/il_794xN.7637792362_joh3.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/c267bb/7637792374/il_794xN.7637792374_o1ct.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/1b28de/7637792376/il_794xN.7637792376_dh7i.jpg"
+    ]
+  },
+  {
+    title:"5.492\" Megalodon Fossil Tooth", price:"$230.00",
+    url:"https://www.etsy.com/listing/4446702416/5492-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/0641a6/7637778976/il_794xN.7637778976_t8n3.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/e0f5e7/7685718761/il_794xN.7685718761_s9c7.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/947c41/7637778984/il_794xN.7637778984_3uaj.jpg"
+    ]
+  },
+  {
+    title:"5.177\" Megalodon Fossil Tooth", price:"$217.00",
+    url:"https://www.etsy.com/listing/4446694457/5177-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/b8d445/7685711853/il_794xN.7685711853_ihk1.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/6b031e/7637772040/il_794xN.7637772040_8haa.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/9b8715/7685711863/il_794xN.7685711863_s31k.jpg"
+    ]
+  },
+  {
+    title:"Captain's Choice Mako Pendant", price:"$19.00",
+    url:"https://www.etsy.com/listing/4441153419/175200-captains-choice-mako-pendent",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/3d8fd2/7602108368/il_794xN.7602108368_cixw.jpg"
+    ]
+  },
+  {
+    title:"5.512\" Megalodon Fossil Tooth", price:"$265.00",
+    url:"https://www.etsy.com/listing/4440685199/5512-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/340444/7647124455/il_794xN.7647124455_gk6k.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/075b39/3508028636/il_794xN.3508028636_he3c.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/4089ee/3508028412/il_794xN.3508028412_fcha.jpg"
+    ]
+  },
+  {
+    title:"2.717\" Megalodon Tooth Fossil", price:"$92.00",
+    url:"https://www.etsy.com/listing/1335989874/2717-megalodon-tooth-fossil",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/838d1d/4429101991/il_794xN.4429101991_rsvf.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/9cc35d/4381714740/il_794xN.4381714740_6v5r.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/7317c5/4429102283/il_794xN.4429102283_7bn0.jpg"
+    ]
+  },
+  {
+    title:"Real 2.126\" Megalodon Tooth Shark Fossil", price:"$75.00",
+    url:"https://www.etsy.com/listing/1349969649/real-2126-megalodon-tooth-shark-fossil",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/075b39/3508028636/il_794xN.3508028636_he3c.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/4089ee/3508028412/il_794xN.3508028412_fcha.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/8bd081/3508028522/il_794xN.3508028522_or9v.jpg"
+    ]
+  },
+  {
+    title:"3.189\" Megalodon Tooth Fossil", price:"$99.00",
+    url:"https://www.etsy.com/listing/1349965729/3189-megalodon-tooth-fossil",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/838d1d/4429101991/il_794xN.4429101991_rsvf.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/9cc35d/4381714740/il_794xN.4381714740_6v5r.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/7317c5/4429102283/il_794xN.4429102283_7bn0.jpg"
+    ]
+  },
+  {
+    title:"4.685\" Megalodon Tooth Fossil", price:"$111.00",
+    url:"https://www.etsy.com/listing/1294478618/4685-megalodon-tooth-fossil",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/57ba5d/4225250939/il_794xN.4225250939_498e.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/3ad760/4428916067/il_794xN.4428916067_iymt.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/7dd5c3/4177622000/il_794xN.4177622000_cudi.jpg"
+    ]
+  },
+  {
+    title:"2.854\" Megalodon Tooth Fossil", price:"$75.00",
+    url:"https://www.etsy.com/listing/1153597352/2854-megalodon-tooth-fossil",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/c8b0a2/3624900596/il_794xN.3624900596_tcra.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/733aa8/3624899226/il_794xN.3624899226_iprz.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/559106/3672511397/il_794xN.3672511397_9ann.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/fd403c/3624899198/il_794xN.3624899198_1uwn.jpg"
+    ]
+  },
+  {
+    title:"2.879\" Megalodon Tooth Fossil", price:"$75.00",
+    url:"https://www.etsy.com/listing/1167555589/2879-megalodon-tooth-fossil",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/c0054f/3624885548/il_794xN.3624885548_cncx.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/4a70d7/3624893750/il_794xN.3624893750_h0v8.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/469079/3672497971/il_794xN.3672497971_qzvo.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/fb12fc/3624885538/il_794xN.3624885538_wx90.jpg"
+    ]
+  },
+  {
+    title:"2.047\" Broad Tooth Mako Fossil", price:"$68.00",
+    url:"https://www.etsy.com/listing/4446725678/2047-broad-tooth-mako-fossil",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/838d1d/4429101991/il_794xN.4429101991_rsvf.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/9cc35d/4381714740/il_794xN.4381714740_6v5r.jpg"
+    ]
+  },
+  {
+    title:"2.305\" Broad Tooth Mako Shark Fossil", price:"$67.00",
+    url:"https://www.etsy.com/listing/4446727901/2305-broad-tooth-mako-shark-fossil",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/075b39/3508028636/il_794xN.3508028636_he3c.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/4089ee/3508028412/il_794xN.3508028412_fcha.jpg"
+    ]
+  },
+  {
+    title:"2.156\" Megalodon Fossil Tooth", price:"$65.00",
+    url:"https://www.etsy.com/listing/4446729234/2156-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/061175/7637741542/il_794xN.7637741542_mb5k.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/7c6f05/7637742508/il_794xN.7637742508_somk.jpg"
+    ]
+  },
+  {
+    title:"2.480\" Megalodon Fossil Tooth", price:"$90.00",
+    url:"https://www.etsy.com/listing/1139950760/2480-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/c3040e/3620528173/il_794xN.3620528173_rhea.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/d2c62d/4428896621/il_794xN.4428896621_3jjm.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/07076b/3620528371/il_794xN.3620528371_jysb.jpg"
+    ]
+  },
+  {
+    title:"2.323\" Megalodon Fossil Tooth", price:"$65.00",
+    url:"https://www.etsy.com/listing/1153887697/2323-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/e6eec3/4429131875/il_794xN.4429131875_b3kx.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/30741a/3572883960/il_794xN.3572883960_krws.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/e9d10d/4381517518/il_794xN.4381517518_kiak.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/d95264/4429131741/il_794xN.4429131741_n3p5.jpg"
+    ]
+  },
+  {
+    title:"5.039\" Megalodon Fossil Tooth", price:"$109.00",
+    url:"https://www.etsy.com/listing/1118230679/5039-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/41ccf4/4429108119/il_794xN.4429108119_f17m.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/9c3f53/3458174724/il_794xN.3458174724_qtxu.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/9748e8/4381720892/il_794xN.4381720892_avmn.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/ebb11f/4429108315/il_794xN.4429108315_9cr8.jpg"
+    ]
+  },
+  {
+    title:"3.346\" Megalodon Fossil Tooth", price:"$85.00",
+    url:"https://www.etsy.com/listing/1101121556/3346-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/19e00c/4429121113/il_794xN.4429121113_izzr.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/bf463b/4429121027/il_794xN.4429121027_16g5.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/89b4f8/4429121005/il_794xN.4429121005_mhgl.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/6e7b07/3493862953/il_794xN.3493862953_nctr.jpg"
+    ]
+  },
+  {
+    title:"4.409\" Megalodon Fossil Tooth", price:"$119.00",
+    url:"https://www.etsy.com/listing/4446739789/4409-megalodon-fossil-tooth",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/57ba5d/4225250939/il_794xN.4225250939_498e.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/3ad760/4428916067/il_794xN.4428916067_iymt.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/7dd5c3/4177622000/il_794xN.4177622000_cudi.jpg"
+    ]
+  },
+  {
+    title:"3.346\" Megalodon Fossil Tooth", price:"$86.00",
+    url:"https://www.etsy.com/listing/4446741012/3346-megalodon-fossil-tooth-b",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/19e00c/4429121113/il_794xN.4429121113_izzr.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/bf463b/4429121027/il_794xN.4429121027_16g5.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/89b4f8/4429121005/il_794xN.4429121005_mhgl.jpg"
+    ]
+  },
+  {
+    title:"5.787\" Megalodon Fossil Tooth", price:"$199.00",
+    url:"https://www.etsy.com/listing/4446743345/5787-megalodon-fossil-tooth-b",
+    photos:[
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/061175/7637741542/il_794xN.7637741542_mb5k.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/7c6f05/7637742508/il_794xN.7637742508_somk.jpg",
+      "https://images.weserv.nl/?url=i.etsystatic.com/21787500/r/il/dddf70/7637742502/il_794xN.7637742502_ttdg.jpg"
+    ]
+  }
+];
+
+const VIDEOS = [
+  "Sandtiger-short-031126-2046hrs.mp4",
+  "bennie-short-031126-1148hrs.mp4",
+  "Pointatbenni2026-03-12 07-27-12.mp4",
+  "Swimup-short-3-9-1800hrs.mp4",
+  "Nice4inch-short-3-10-1900hrs.mp4"
+];
 const PAGE_SIZE = 6;
 let shown = 0;
 
-function buildCard(l, i) {
-  const size = (l.title.match(/[\d.]+"/)||[''])[0];
-  const video = VIDEOS[i % VIDEOS.length];
-  const div = document.createElement('div');
-  div.className = 'listing-card';
-  div.innerHTML = `<div class="listing-media" data-state="photo">
-    <img class="listing-photo" src="${l.img}" alt="${l.title}" />
-    <video class="listing-video" src="${video}" muted playsinline loop style="display:none;"></video>
-    <div class="media-hint">click to see more</div>
-  </div>
-  <div class="listing-info">
-    <div class="listing-size">${size}</div>
-    <div class="listing-grade">Display Grade</div>
-    <div class="listing-price">${l.price} <span class="free-ship">FREE SHIPPING</span></div>
-  </div>
-  <a href="${l.url}" target="_blank" class="buy-btn">BUY NOW</a>`;
+// Assign a random video to each card slot once at load
+const videoAssign = ALL_LISTINGS.map(function() {
+  return VIDEOS[Math.floor(Math.random() * VIDEOS.length)];
+});
 
-  const media = div.querySelector('.listing-media');
-  const photo = div.querySelector('.listing-photo');
-  const vid = div.querySelector('.listing-video');
-  const hint = div.querySelector('.media-hint');
-  let state = 0;
+function buildCard(listing, cardIndex) {
+  var sizeMatch = listing.title.match(/([\d.]+)["″]/);
+  var size      = sizeMatch ? sizeMatch[1] + '"' : '';
+  var video     = videoAssign[cardIndex];
+  var photos    = listing.photos;
+  var total     = photos.length + 1; // photos + video
 
-  media.addEventListener('click', () => {
-    state = (state + 1) % 3;
-    if (state === 0) {
-      vid.pause(); vid.style.display='none';
-      photo.style.display='block';
-      hint.textContent='click to see more';
-    } else if (state === 1) {
-      // back photo — for now show same image with note
-      photo.style.display='block';
-      vid.style.display='none';
-      hint.textContent='click for video';
+  var card = document.createElement('div');
+  card.className = 'listing-card';
+
+  // Dots: one per photo + one for video state
+  var dotsHTML = '';
+  for (var d = 0; d < photos.length; d++) {
+    dotsHTML += '<span class="dot' + (d === 0 ? ' active' : '') + '"></span>';
+  }
+  dotsHTML += '<span class="dot"></span>';
+
+  card.innerHTML =
+    '<div class="listing-media">' +
+      '<img class="listing-photo" src="' + photos[0] + '" alt="' + listing.title + '" />' +
+      '<video class="listing-video" src="' + video + '" muted playsinline loop></video>' +
+      '<div class="photo-dots">' + dotsHTML + '</div>' +
+      '<div class="media-hint">tap to see more &#8250;</div>' +
+    '</div>' +
+    '<div class="listing-info">' +
+      '<div class="listing-size">' + size + '</div>' +
+      '<div class="listing-grade">Display Grade</div>' +
+      '<div class="listing-price">' + listing.price +
+        ' <span class="free-ship">FREE SHIPPING</span>' +
+      '</div>' +
+    '</div>' +
+    '<a href="' + listing.url + '" target="_blank" class="buy-btn">BUY NOW</a>';
+
+  var media     = card.querySelector('.listing-media');
+  var photoEl   = card.querySelector('.listing-photo');
+  var vidEl     = card.querySelector('.listing-video');
+  var hintEl    = card.querySelector('.media-hint');
+  var allDots   = Array.prototype.slice.call(card.querySelectorAll('.dot'));
+  var photoDots = allDots.slice(0, photos.length);
+  var videoDot  = allDots[photos.length];
+  var state = 0;
+
+  function activate(s) {
+    state = s;
+    photoDots.forEach(function(dot, i) { dot.classList.toggle('active', i === state); });
+    videoDot.classList.toggle('active', state === photos.length);
+    if (state < photos.length) {
+      vidEl.pause();
+      vidEl.style.display = 'none';
+      photoEl.style.display = 'block';
+      photoEl.src = photos[state];
+      hintEl.textContent = state < photos.length - 1 ? 'tap to see more \u203a' : 'tap for video \u203a';
     } else {
-      photo.style.display='none';
-      vid.style.display='block';
-      vid.play();
-      hint.textContent='click to reset';
+      photoEl.style.display = 'none';
+      vidEl.style.display = 'block';
+      vidEl.play();
+      hintEl.textContent = 'tap to reset \u203a';
     }
-  });
-  return div;
+  }
+
+  media.addEventListener('click', function() { activate((state + 1) % total); });
+  return card;
 }
 
 function showMore() {
-  const grid = document.getElementById('listingsGrid');
-  const end = Math.min(shown + PAGE_SIZE, ALL_LISTINGS.length);
-  for (let i = shown; i < end; i++) {
+  var grid = document.getElementById('listingsGrid');
+  var end  = Math.min(shown + PAGE_SIZE, ALL_LISTINGS.length);
+  for (var i = shown; i < end; i++) {
     grid.appendChild(buildCard(ALL_LISTINGS[i], i));
   }
   shown = end;
-  const wrap = document.getElementById('seeMoreWrap');
-  wrap.style.display = shown < ALL_LISTINGS.length ? 'block' : 'none';
+  document.getElementById('seeMoreWrap').style.display =
+    shown < ALL_LISTINGS.length ? 'block' : 'none';
 }
 
 document.getElementById('seeMoreBtn').addEventListener('click', showMore);
 showMore();
 
 // Rolling video players
-const rollingClips = [
-  { src: "Sandtiger-short-031126-2046hrs.mp4", label: "Sand Tiger Shark - Offshore Discovery" },
-  { src: "bennie-short-031126-1148hrs.mp4",    label: "Fossil Recovery - Offshore Dive" },
-  { src: "Pointatbenni2026-03-12 07-27-12.mp4",label: "Fossil Shark Tooth - Offshore Find" },
-  { src: "Swimup-short-3-9-1800hrs.mp4",       label: "Dive Ascent - Offshore Expedition" },
-  { src: "Nice4inch-short-3-10-1900hrs.mp4",   label: "4-Inch Fossil Shark Tooth - Recovered Offshore" },
+var rollingClips = [
+  { src:"Sandtiger-short-031126-2046hrs.mp4",     label:"Sand Tiger Shark \u2014 Offshore Discovery" },
+  { src:"bennie-short-031126-1148hrs.mp4",          label:"Fossil Recovery \u2014 Offshore Dive" },
+  { src:"Pointatbenni2026-03-12 07-27-12.mp4",      label:"Fossil Shark Tooth \u2014 Offshore Find" },
+  { src:"Swimup-short-3-9-1800hrs.mp4",             label:"Dive Ascent \u2014 Offshore Expedition" },
+  { src:"Nice4inch-short-3-10-1900hrs.mp4",         label:"4-Inch Fossil Shark Tooth \u2014 Recovered Offshore" }
 ];
+
 function createPlayer(videoEl, labelEl, startIndex) {
-  let current = startIndex % rollingClips.length;
+  var current = startIndex % rollingClips.length;
   function load() {
     labelEl.textContent = rollingClips[current].label;
     videoEl.src = rollingClips[current].src;
-    videoEl.load(); videoEl.play().catch(()=>{});
+    videoEl.load();
+    videoEl.play().catch(function() {});
   }
-  videoEl.addEventListener('ended', () => {
-    current = (current+1)%rollingClips.length;
+  videoEl.addEventListener('ended', function() {
+    current = (current + 1) % rollingClips.length;
     videoEl.classList.add('fade-out');
-    setTimeout(()=>{ videoEl.classList.remove('fade-out'); load(); videoEl.classList.add('fade-in'); setTimeout(()=>videoEl.classList.remove('fade-in'),500); },480);
+    setTimeout(function() {
+      videoEl.classList.remove('fade-out');
+      load();
+      videoEl.classList.add('fade-in');
+      setTimeout(function() { videoEl.classList.remove('fade-in'); }, 500);
+    }, 480);
   });
   load();
 }
-createPlayer(document.getElementById('playerA'),document.getElementById('labelA'),0);
-createPlayer(document.getElementById('playerB'),document.getElementById('labelB'),1);
+
+createPlayer(document.getElementById('playerA'), document.getElementById('labelA'), 0);
+createPlayer(document.getElementById('playerB'), document.getElementById('labelB'), 1);
 </script>
 </body>
 </html>
