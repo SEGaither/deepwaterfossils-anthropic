@@ -38,6 +38,9 @@ body { font-family: system-ui, sans-serif; background: #081c25; color: #fff; }
 .free-ship { font-size: 11px; font-weight: 500; color: #6dbf8a; margin-left: 6px; }
 .buy-btn { display: block; margin: 12px 16px 16px; background: linear-gradient(135deg,#c8960c,#f0c040); color: #000; font-weight: 800; font-size: 15px; letter-spacing: 0.08em; border: none; border-radius: 6px; padding: 14px; cursor: pointer; text-decoration: none; text-align: center; transition: opacity 0.15s; }
 .buy-btn:hover { opacity: 0.85; }
+.buy-btn-disabled { opacity: 0.4; cursor: not-allowed; background: #555; color: #999; }
+.pp-wrap { margin: 12px 16px 16px; min-height: 50px; }
+.pay-success { margin: 12px 16px 16px; padding: 14px; background: #1e4d2b; border: 1px solid #2ea043; border-radius: 6px; color: #56d364; font-weight: 700; text-align: center; font-size: 14px; }
 .see-more-wrap { text-align: center; margin-top: 40px; }
 /* HOW FOUND */
 .how-found { background: #081c25; padding: clamp(24px,4vw,64px) 0; }
@@ -397,7 +400,7 @@ function buildCard(listing, cardIndex) {
         ' <span class="free-ship">FREE SHIPPING</span>' +
       '</div>' +
     '</div>' +
-    '<a href="' + listing.url + '" target="_blank" class="buy-btn">BUY NOW</a>';
+    '<div class="pp-wrap" data-title="' + listing.title.replace(/"/g, '&quot;') + '" data-amount="' + listing.price.replace('$', '') + '" data-etsy="' + listing.url + '"></div>';
 
   var media     = card.querySelector('.listing-media');
   var photoEl   = card.querySelector('.listing-photo');
@@ -439,10 +442,81 @@ function showMore() {
   shown = end;
   document.getElementById('seeMoreWrap').style.display =
     shown < ALL_LISTINGS.length ? 'block' : 'none';
+  if (window.paypal) renderPayPalButtons();
 }
 
 document.getElementById('seeMoreBtn').addEventListener('click', showMore);
 showMore();
+
+// ── PAYPAL CHECKOUT ──────────────────────────────────────────────────────────
+function showBuyFallback(wrap) {
+  var etsy = wrap.getAttribute('data-etsy');
+  if (etsy) {
+    wrap.innerHTML = '<a href="' + etsy + '" target="_blank" class="buy-btn">BUY ON ETSY</a>';
+  } else {
+    wrap.innerHTML = '<button class="buy-btn buy-btn-disabled" disabled>Purchase link unavailable</button>';
+  }
+}
+
+function renderPayPalButton(wrap) {
+  if (!window.paypal) { showBuyFallback(wrap); return; }
+  var title  = wrap.getAttribute('data-title');
+  var amount = wrap.getAttribute('data-amount');
+  var etsy   = wrap.getAttribute('data-etsy');
+
+  paypal.Buttons({
+    style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'buynow', height: 45 },
+    createOrder: function() {
+      return fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: title, amount: amount })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (!d.id) throw new Error('no order id');
+        return d.id;
+      });
+    },
+    onApprove: function(data) {
+      return fetch('/api/capture-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderID: data.orderID })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function() {
+        wrap.innerHTML = '<div class="pay-success">✓ Payment complete — thank you!</div>';
+      });
+    },
+    onError: function() { showBuyFallback(wrap); }
+  }).render(wrap).catch(function() { showBuyFallback(wrap); });
+}
+
+function renderPayPalButtons() {
+  var wraps = document.querySelectorAll('.pp-wrap:not([data-pp-init])');
+  wraps.forEach(function(wrap) {
+    wrap.setAttribute('data-pp-init', '1');
+    renderPayPalButton(wrap);
+  });
+}
+
+function showAllFallbacks() {
+  document.querySelectorAll('.pp-wrap').forEach(showBuyFallback);
+}
+
+fetch('/api/paypal-config')
+  .then(function(r) { return r.json(); })
+  .then(function(cfg) {
+    if (!cfg.clientId) { showAllFallbacks(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://www.paypal.com/sdk/js?client-id=' + cfg.clientId + '&currency=USD&intent=capture';
+    s.onload = renderPayPalButtons;
+    s.onerror = showAllFallbacks;
+    document.head.appendChild(s);
+  })
+  .catch(showAllFallbacks);
+// ─────────────────────────────────────────────────────────────────────────────
 
 // Rolling video players
 var rollingClips = [
