@@ -400,7 +400,7 @@ function buildCard(listing, cardIndex) {
         ' <span class="free-ship">FREE SHIPPING</span>' +
       '</div>' +
     '</div>' +
-    '<div class="pp-wrap" data-title="' + listing.title.replace(/"/g, '&quot;') + '" data-amount="' + listing.price.replace('$', '') + '" data-etsy="' + listing.url + '"></div>';
+    '<div class="pp-wrap" data-listing-id="' + (listing.url.match(/\/listing\/(\d+)\//) || ['',''])[1] + '" data-etsy="' + listing.url + '"></div>';
 
   var media     = card.querySelector('.listing-media');
   var photoEl   = card.querySelector('.listing-photo');
@@ -460,9 +460,8 @@ function showBuyFallback(wrap) {
 
 function renderPayPalButton(wrap) {
   if (!window.paypal) { showBuyFallback(wrap); return; }
-  var title  = wrap.getAttribute('data-title');
-  var amount = wrap.getAttribute('data-amount');
-  var etsy   = wrap.getAttribute('data-etsy');
+  var listingId = wrap.getAttribute('data-listing-id');
+  var etsy      = wrap.getAttribute('data-etsy');
 
   paypal.Buttons({
     style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'buynow', height: 45 },
@@ -470,7 +469,7 @@ function renderPayPalButton(wrap) {
       return fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: title, amount: amount })
+        body: JSON.stringify({ listingId: listingId })
       })
       .then(function(r) { return r.json(); })
       .then(function(d) {

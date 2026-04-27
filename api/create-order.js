@@ -1,14 +1,21 @@
+const PRICES = require('./prices');
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { title, amount } = req.body || {};
-  if (!title || !amount) {
-    return res.status(400).json({ error: 'Missing title or amount' });
+  const { listingId } = req.body || {};
+  if (!listingId) {
+    return res.status(400).json({ error: 'Missing listingId' });
   }
 
-  const clientId = process.env.PAYPAL_CLIENT_ID;
+  const listing = PRICES[listingId];
+  if (!listing) {
+    return res.status(400).json({ error: 'Unknown listing' });
+  }
+
+  const clientId     = process.env.PAYPAL_CLIENT_ID;
   const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
   const base = process.env.PAYPAL_ENV === 'live'
     ? 'https://api-m.paypal.com'
@@ -36,7 +43,10 @@ module.exports = async function handler(req, res) {
     },
     body: JSON.stringify({
       intent: 'CAPTURE',
-      purchase_units: [{ description: title, amount: { currency_code: 'USD', value: amount } }],
+      purchase_units: [{
+        description: listing.title,
+        amount: { currency_code: 'USD', value: listing.price },
+      }],
     }),
   });
 
